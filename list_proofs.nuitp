@@ -1,0 +1,115 @@
+# NuITP proof script (alpha 36)
+
+set module MY-NAT-LIST .
+genset GEN-BOOL for Bool is True ;; False .
+genset GEN-NAT for Nat is 0 ;; s 0 ;; s N:NzNat .
+genset GEN-NZNAT for NzNat is s 0 ;; s N:NzNat .
+genset GEN-LIST for List is nilList ;; N:Nat ;; N:Nat R:NeList .
+genset GEN-NELIST for NeList is N:Nat ;; N:Nat R:NeList .
+
+set goal sizeList(R1:List R2:List) = sizeList(R1:List) + sizeList(R2:List) .
+apply gsi! to 0 on $1 .
+internalize .
+
+set goal reverseList(R1:List R2:List) = reverseList(R2:List) reverseList(R1:List) .
+apply gsi! to 0 on $1 .
+internalize .
+
+set goal reverseList(N:Nat) = N:Nat .
+apply eps to 0 .
+internalize .
+
+set goal sizeList(R:List) = sizeList(reverseList(R:List)) .
+apply gsi! to 0 .
+internalize .
+
+set goal N:Nat >= sizeList(R:List) = True -> drop(N:Nat,R:List) = nilList .
+apply gsi! to 0 .
+apply cs to 0.6.1 .
+internalize .
+
+set goal sizeList(R:List N:Nat) = s sizeList(R:List) .
+apply gsi! to 0 .
+internalize .
+
+set goal N:Nat < sizeList(R:List M:Nat) = True -> drop(N:Nat,R:List M:Nat) = drop(N:Nat,R:List) M:Nat .
+apply le to 0 with N:NzNat < s 0 = False .
+apply gsi! to 0.1 .
+apply gsi* to 0.2 .
+internalize .
+
+set goal reverseList(R:List N:Nat) = N:Nat reverseList(R:List) .
+apply gsi! to 0 .
+internalize .
+
+set goal N:Nat >= sizeList(R:List) = True -> take(N:Nat,R:List) = R:List .
+apply gsi! to 0 .
+apply icc to 0.6.1 .
+internalize .
+
+set goal N:Nat < sizeList(R:List M:Nat) = True -> take(N:Nat,R:List M:Nat) = take(N:Nat,R:List) .
+apply le to 0 with N:NzNat < s 0 = False .
+apply gsi! to 0.1 .
+apply gsi* to 0.2 .
+internalize .
+
+set goal reverseList(reverseList(R:List)) = R:List .
+apply gsi! to 0 .
+internalize .
+
+set goal R:NeList = nilList -> false .
+apply gsi! to 0 .
+apply gsi! to 0.1 .
+internalize .
+
+set goal sizeList(R:NeList) = 0 -> false .
+apply gsi! to 0 .
+internalize .
+
+set goal N:Nat <= sizeList(R:List) = True -> take(N:Nat, R:List) drop(N:Nat, R:List) = R:List .
+apply gsi! to 0 .
+apply icc to 0.6.1 .
+internalize .
+
+set goal take(sizeList(R1:List), R1:List R2:List) = R1:List .
+apply gsi! to 0 .
+internalize .
+
+set goal drop(sizeList(R1:List), R1:List R2:List) = R2:List .
+apply gsi! to 0 .
+internalize .
+
+set goal A:Nat < B:Nat = True \/ A:Nat = B:Nat \/ A:Nat > B:Nat = True .
+apply gsi! to 0 .
+internalize .
+
+set goal A:Nat + B:NzNat = A:Nat -> false .
+apply gsi! to 0 .
+apply cs to 0.3.1 .
+internalize .
+
+set goal N:Nat = N1:Nat + N2:Nat /\ True = N:Nat < N1:Nat -> false .
+apply gsi* to 0 .
+internalize .
+
+set goal R1:List N:Nat = R2:List N:Nat <-> R1:List = R2:List .
+apply deq to 0 .
+apply gsi* to 0.1 .
+apply gsi! to 0.2 .
+internalize .
+
+# set goal A:Nat < s A:Nat = True .
+# apply gsi! to 0 .
+# internalize .
+# 
+# set goal A:Nat < s (A:Nat + B:Nat) = True .
+# apply gsi! to 0 .
+# internalize .
+
+set goal N:Nat + M:Nat = sizeList(R:List) -> drop(N:Nat, reverseList(R:List)) = reverseList(take(M:Nat, R:List)) .
+apply gsi* to 0 .
+internalize .
+
+set goal N:Nat + M:Nat = sizeList(R:List) -> take(N:Nat, R:List) = reverseList(drop(M:Nat, reverseList(R:List))) .
+apply gsi* to 0 .
+internalize .

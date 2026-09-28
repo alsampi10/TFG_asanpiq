@@ -1,0 +1,149 @@
+# NuITP proof script (alpha 36)
+
+set module MY-NAT-MATRIX .
+genset GEN-BOOL for Bool is True ;; False .
+genset GEN-NAT for Nat is 0 ;; s 0 ;; s N:NzNat .
+genset GEN-NZNAT for NzNat is s 0 ;; s N:NzNat .
+genset GEN-LIST for List is nilList ;; N:Nat ;; N:Nat R:NeList .
+genset GEN-NELIST for NeList is N:Nat ;; N:Nat R:NeList .
+genset GEN-MAT for NatMatrix is emptyMatrix ;; R:NeList ; M:NeNatMatrix .
+genset GEN-NEMAT for NeNatMatrix is R:NeList ;; R:NeList ; M:NeNatMatrix .
+
+strat GND is try-gnd ; try-eps ; try-cs .
+
+set goal size(M1:NatMatrix ; M2:NatMatrix) = size(M1:NatMatrix) + size(M2:NatMatrix) .
+apply gsi! to 0 on $1 .
+internalize .
+
+set goal reverse(M1:NatMatrix ; M2:NatMatrix) = reverse(M2:NatMatrix) ; reverse(M1:NatMatrix) .
+apply gsi! to 0 on $1 .
+internalize .
+
+set goal reverse(R:NeList) = R:NeList .
+apply gsi! to 0 .
+internalize .
+
+set goal size(M:NatMatrix) = size(reverse(M:NatMatrix)) .
+apply gsi! to 0 .
+internalize .
+
+set goal reverse(reverse(M:NatMatrix)) = M:NatMatrix .
+apply gsi! to 0 .
+internalize .
+
+
+
+set goal size(insertColumn(R:List, emptyMatrix)) = sizeList(R:List) .
+apply gsi! to 0 .
+
+
+set goal insertColumn(N:Nat, emptyMatrix) = N:Nat .
+apply gsi! to 0 .
+
+
+set goal transpose(R:NeList) = insertColumn(R:NeList,emptyMatrix) .
+apply gsi! to 0 .
+
+
+set goal transpose(N:Nat) = N:Nat .
+apply gsi! to 0 .
+internalize .
+
+set goal transpose(A:NeList B:NeList) = transpose(A:NeList) ; transpose(B:NeList) .
+apply gsi! to 0 on $1 .
+internalize .
+
+set goal isRectangularMat(R:NeList ; M:NatMatrix, N:Nat) = True <-> isRectangularMat(R:NeList, N:Nat) = True /\ isRectangularMat(M:NatMatrix, N:Nat) = True .
+apply deq to 0 .
+apply va to 0.2 on $3:NeList ; $1:NatMatrix .
+apply ni* to 0.2.1 on isRectangularMat($4:NeNatMatrix, $2:Nat) .
+apply va to 0.1 on $3:NeList ; $1:NatMatrix .
+apply ni* to 0.1.1 on isRectangularMat($4:NeNatMatrix, $2:Nat) .
+apply ni* to 0.1.1.2.1.1.1 on isRectangularMat($7:NeList, $6:NzNat) .
+apply ni* to 0.1.1.5.1.1 on isRectangularMat($8:NeList, $7:NzNat) .
+internalize .
+
+
+set goal isRectangularMat(R:NeList ; M2:NatMatrix, N:Nat) = True -> isRectangularMat(M2:NatMatrix, N:Nat) = True .
+apply va to 0 on $3:NeList ; $1:NatMatrix .
+apply ni* to 0.1 on isRectangularMat($4:NeNatMatrix, $2:Nat) .
+internalize .
+
+set goal True = N:Nat =nat= sizeList(R:List) -> True = isRectangularMat(R:List, N:Nat) .
+apply ni! to 0 on isRectangularMat($2:List, $1:Nat) .
+apply va to 0.2.1 on $4:NzNat =nat= sizeList($3:NeList) .
+apply cas! to 0.2.1.1 .
+internalize .
+
+set goal isRectangularMat(M1:NatMatrix, N:Nat) = True /\ isRectangularMat(M2:NatMatrix, N:Nat) = True -> isRectangularMat(M1:NatMatrix ; M2:NatMatrix, N:Nat) = True .
+apply gsi* to 0 on $1 $2 .
+apply ns* to 0.4 on isRectangularMat($5 ; $4, $3:Nat) .
+internalize .
+
+
+set goal transpose(N:Nat R:NeList) = N:Nat ; transpose(R:NeList) .
+apply gsi! to 0 .
+internalize .
+
+set goal transpose(R1:NeList R2:NeList) = transpose(R1:NeList) ; transpose(R2:NeList) .
+apply gsi! to 0 on $1 .
+internalize .
+
+set goal isRectangularMat(insertColumn(R:NeList, emptyMatrix), s 0) = True .
+apply gsi* to 0 .
+
+set goal isRectangularMat(transpose(R:NeList), s 0) = True .
+apply gsi* to 0 .
+internalize .
+
+set goal isSquareMat(Mtx:NatMatrix, N:Nat) = True -> isRectangularMat(Mtx:NatMatrix, N:Nat) = True .
+apply ni! to 0 on isRectangularMat($1:NatMatrix, $2:Nat) .
+apply ni* to 0.2.1 on isSquareMat($3:NeList, $4:NzNat) .
+apply ni* to 0.7.1 on isSquareMat($3:NeList ; $4:NeNatMatrix, $5:NzNat) .
+apply ni* to 0.8.1 on isSquareMat($3 ; $4, $5) .
+apply ni* to 0.8.1.1.3.1 on isRectangularMat($6:NeList ; $7:NeNatMatrix, $8:NzNat) .
+apply ni* to 0.2.1.3.1.1 on isRectangularMat($5:NeList, s 0) .
+apply ni* to 0.7.1.3.1 on isRectangularMat($6:NeList ; $7:NeNatMatrix, $8:NzNat) .
+internalize .
+
+set goal False = 0 =nat= sizeList(R:NeList) .
+apply gsi! to 0 .
+internalize .
+
+set goal True = 0 =nat= sizeList(R:NeList) -> false .
+apply gsi! to 0 .
+internalize .
+
+set goal size(M:NeNatMatrix) = 0 -> false .
+apply gsi! to 0 .
+internalize .
+
+set goal isSquareMat(M:Nat ; insertColumn(R:NeList,emptyMatrix), N:Nat) = False  .
+apply ni* to 0 on insertColumn($3:NeList, emptyMatrix) .
+apply ni! to 0.1 on isSquareMat($1:Nat ; $4:Nat, $2:Nat) .
+apply ni! to 0.1.4.1 on isRectangularMat($6:Nat ; $7:Nat, $5:NzNat) .
+apply cas! to 0.1.4.1.3.1 on $10 .
+apply ni* to 0.2 on isSquareMat($1:Nat ; $4:Nat ; insertColumn($5:List, emptyMatrix), $2:Nat) .
+apply ni* to 0.2.4.1 on isRectangularMat($7:Nat ; $8:Nat ; insertColumn($9:List, emptyMatrix), $6:NzNat) .
+apply va to 0.2.4.1.3.1 on insertColumn($12:List, emptyMatrix) .
+apply cas! to 0.2.4.1.3.1.1 on $14 .
+apply ni* to 0.2.4.1.3.1.1.2.1 on isRectangularMat($11:Nat ; $16:NeList ; $15:NeNatMatrix, $13:NzNat) .
+apply cas! to 0.2.4.1.3.1.1.2.1.3.1 on $20 .
+apply cas! to 0.2.4.1.3.1.1.1.1 on $13 .
+
+set goal isRectangularMat(M:NeNatMatrix,N:NzNat) = True -> isRectangularMat(M:NeNatMatrix, s N:NzNat) = False .
+apply gsi* to 0 on $2 .
+apply ni* to 0.2 on isRectangularMat($1:NeNatMatrix, s 0) .
+apply ni* to 0.2.2.1 on isRectangularMat($3:NeList, s s 0) .
+apply cas! to 0.2.2.1.2.1 .
+apply cas* to 0.2.6.1 .
+apply va to 0.2.6.1.2.1 on insertColumn($5:NeList, emptyMatrix) .
+apply cas! to 0.2.6.1.2.1.1 on $6 .
+apply ni* to 0.1 on isRectangularMat($1:NeNatMatrix, s $3) .
+apply gsi* to 0.1.1.2.1 .
+apply ni* to 0.1.1.2.1.4.1 on isRectangularMat($6 $7, s s s 0) .
+apply cas! to 0.1.1.2.1.4.1.1.2.1 .
+apply ni* to 0.1.1.2.1.3.1 on isRectangularMat($6 $7, s s s $8) .
+apply le* to 0.1.1.2.1.3.1.1.2.1 with A:Nat =nat= B:Nat = True /\ s A:Nat =nat= B:Nat = True -> false .
+apply gsi* to 0.1.1.2.1.3.1.1.2.1.1 .
+internalize .

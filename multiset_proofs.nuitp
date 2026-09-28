@@ -1,0 +1,844 @@
+# NuITP proof script (alpha 36)
+
+set module MY-NAT-MSET .
+genset GEN-BOOL for Bool is True ;; False .
+genset GEN-NAT for Nat is 0 ;; s 0 ;; s N:NzNat .
+genset GEN-NZNAT for NzNat is s 0 ;; s N:NzNat .
+genset GEN-LIST for List is nilList ;; N:Nat ;; N:Nat R:NeList .
+genset GEN-NELIST for NeList is N:Nat ;; N:Nat R:NeList .
+genset GEN-MSET for NatMSet is nilMSet ;; N:Nat ;; N:Nat : S:NeNatMSet .
+genset GEN-NEMSET for NeNatMSet is N:Nat ;; N:Nat : S:NeNatMSet .
+
+strat GND is try-gnd ; try-eps ; try-cs ; try-icc .
+strat GSI is try-gsi ; try-cs ; try-cvul ; try-cs ; try-icc ; try-cs .
+
+
+set goal S1:NatMSet =MSet= S1:NatMSet = True .
+apply gsi! to 0 .
+internalize .
+
+set goal S1:NatMSet : S2:NatMSet = S2:NatMSet : S1:NatMSet .
+apply gsi! to 0 .
+internalize .
+
+set goal N:Nat =MSet= M:Nat : S1:NeNatMSet = False .
+apply ni* to 0 on $2:Nat =MSet= $1:Nat : $3:NeNatMSet .
+internalize .
+
+set goal A:NatMSet : B:NatMSet = A:NatMSet : C:NatMSet <-> B:NatMSet = C:NatMSet .
+apply deq* to 0 .
+internalize .
+internalize 0.1 .
+internalize 0.2 .
+
+set goal N:Nat inMSet N:Nat : S:NatMSet = True .
+apply gsi! to 0 .
+internalize .
+
+set goal N:Nat inMSet N:Nat = True .
+apply gsi! to 0 .
+internalize .
+
+set goal S1:NatMSet = N:Nat : S2:NatMSet -> N:Nat inMSet S1:NatMSet = True .
+apply gsi* to 0 .
+internalize .
+
+set goal nilMSet = N:Nat : S:NatMSet -> false .
+apply cvul to 0 .
+internalize .
+
+set goal N1:Nat =nat= N2:Nat = True <-> N1:Nat = N2:Nat .
+apply deq* to 0 .
+apply gsi* to 0.2 .
+internalize .
+internalize 0.1 .
+internalize 0.2 .
+
+set goal A:Nat < B:Nat = True \/ A:Nat = B:Nat \/ A:Nat > B:Nat = True .
+apply gsi* to 0 .
+internalize .
+
+set goal S1:NatMSet = S2:NatMSet -> sizeMSet(S1:NatMSet) = sizeMSet(S2:NatMSet) .
+apply gsi* to 0 .
+internalize .
+
+set goal nilMSet = N:Nat diffMSet N:Nat .
+apply gsi* to 0 .
+internalize .
+
+set goal nilMSet = S:NatMSet diffMSet S:NatMSet : S1:NatMSet .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal s N1:Nat inMSet s N2:Nat : s N3:Nat = N1:Nat inMSet N2:Nat : N3:Nat .
+apply ni* to 0 on $1:Nat inMSet $2:Nat : $3:Nat .
+internalize .
+
+set goal True = B:Bool \/ False = B:Bool .
+apply gnd! to 0 .
+internalize .
+
+set goal False = A:Nat =nat= B:Nat \/ A:Nat = B:Nat .
+apply gsi* to 0 .
+internalize .
+
+set goal False = A:Nat =nat= B:Nat -> A:Nat inMSet B:Nat : S:NatMSet = A:Nat inMSet S:NatMSet .
+apply gsi* to 0 on $3 .
+internalize .
+
+set goal True = A:Nat =nat= B:Nat \/ A:Nat inMSet B:Nat : S:NatMSet = A:Nat inMSet S:NatMSet .
+apply cbeqr to 0 .
+apply cs to 0.1 .
+internalize .
+
+set goal N:Nat inMSet S:NatMSet = True -> N:Nat inMSet S2:NatMSet : S:NatMSet = True .
+apply gsi* to 0 on $2 .
+apply sp* to 0.1 with $1:Nat = $4:Nat \/ False = $1:Nat =nat= $4:Nat .
+internalize .
+
+set goal False = N:Nat =nat= M:Nat /\ True = M:Nat inMSet N:Nat : S:NatMSet -> True = M:Nat inMSet S:NatMSet .
+apply cbeql to 0 .
+apply cbeql to 0.1 .
+apply eps to 0.1.1 .
+apply va to 0.1.1.1 on $1:Nat =nat= $2:Nat .
+apply gnd! to 0.1.1.1.1 .
+apply icc to 0.1.1.1.1.1.1 .
+apply va* to 0.1.1.1.1.1.1.1 on $1:Nat inMSet $3:NatMSet .
+internalize .
+
+set goal True = $1:Nat inMSet $3:NeNatMSet : $2:NeNatMSet -> True = $1:Nat inMSet $3:NeNatMSet \/ True = $1:Nat inMSet $2:NeNatMSet .
+apply cbeql to 0 .
+apply gsi* to 0.1 on $3 $2 .
+apply sp* to 0.1.4.1 with $1:Nat = $4 \/ $1:Nat = $6 \/ (False = ($1:Nat =nat= $4) or ($1:Nat =nat= $6)) .
+apply va to 0.1.4.1.2 on ($4 =nat= $1:Nat) .
+apply gnd! to 0.1.4.1.2.1 .
+apply icc! to 0.1.4.1.2.1.1.1 .
+apply rst to 0.1.4.1.1 .
+apply gsi* to 0.1.4.1.1.1 .
+apply va to 0.1.3.1 on $6 =nat= $1:Nat .
+apply gnd* to 0.1.3.1.1 .
+apply va to 0.1.2.1 on $4 =nat= $1:Nat .
+apply gnd* to 0.1.2.1.1 .
+apply gsi* to 0.1.1.1 .
+internalize .
+
+set goal True = $1:Nat inMSet $3:NatMSet : $2:NatMSet -> True = $1:Nat inMSet $3:NatMSet \/ True = $1:Nat inMSet $2:NatMSet .
+apply gsi* to 0 on $2 $3 .
+internalize .
+
+set goal False = A:Nat =nat= B:Nat -> (A:Nat : S:NatMSet) diffMSet B:Nat = A:Nat : (S:NatMSet diffMSet B:Nat) .
+apply ni* to 0 on $3:NatMSet diffMSet $2:Nat .
+internalize .
+
+set goal True = N:Nat inMSet S:NatMSet -> N:Nat : (S:NatMSet diffMSet N:Nat) = S:NatMSet .
+apply gsi* to 0 on $2 .
+apply cut* to 0.1.1 with $1:Nat = $3:Nat .
+apply sp* to 0.3 with False = $1:Nat inMSet $3 : $4 \/ True = $1:Nat inMSet $3 \/ True = ($1:Nat inMSet $4) and not($1:Nat =nat= $3) .
+apply cut* to 0.3.4.1 with $3 = $1:Nat .
+apply va{GND} to 0.3.1.1 on $3 =nat= $1:Nat .
+apply va{GND} to 0.3.3 on $3 =nat= $1:Nat .
+internalize .
+
+set goal S:NatMSet diffMSet S:NatMSet = nilMSet .
+apply gsi* to 0 .
+internalize .
+
+set goal S:NatMSet diffMSet S:NatMSet =MSet= nilMSet = True .
+apply gsi* to 0 .
+internalize .
+
+set goal S1:NatMSet = S1:NatMSet : S2:NatMSet diffMSet S2:NatMSet .
+apply gsi* to 0 .
+internalize .
+
+set goal S1:NatMSet =MSet= S1:NatMSet : S2:NatMSet diffMSet S2:NatMSet = True .
+apply gsi* to 0 .
+internalize .
+
+set goal S:NatMSet = S1:NatMSet : S2:NatMSet -> S1:NatMSet = S:NatMSet diffMSet S2:NatMSet .
+apply gsi* to 0 .
+internalize .
+
+set goal S:NatMSet = S1:NatMSet : S2:NatMSet -> True = S1:NatMSet =MSet= S:NatMSet diffMSet S2:NatMSet .
+apply gsi* to 0 .
+internalize .
+
+set goal $1:NatMSet = $2:NatMSet -> sizeMSet($1:NatMSet) = sizeMSet($2:NatMSet) .
+apply gsi* to 0 .
+internalize .
+
+set goal 0 = N:NzNat -> false .
+apply gsi! to 0 .
+internalize .
+
+set goal 0 R1:List = N:NzNat R2:List -> false .
+apply cut* to 0 with 0 = $1:NzNat .
+internalize .
+
+set goal A:Nat =nat= B:Nat = False /\ A:Nat R1:List = B:Nat R2:List -> false .
+apply gsi* to 0 on $1 $2 .
+internalize .
+
+set goal A:Nat R1:List = B:Nat R2:List -> A:Nat = B:Nat .
+apply gsi* to 0 on $1 $2 .
+internalize .
+
+set goal $1:NatMSet = $2:NatMSet <-> toSortedList($1:NatMSet) = toSortedList($2:NatMSet) .
+apply deq* to 0 .
+apply ni* to 0.1 on toSortedList($1:NatMSet) .
+apply ni* to 0.1.3 on toSortedList($2:NatMSet) .
+apply cut* to 0.1.3.3 with $3 = $5 .
+apply gsi* to 0.1.3.1 .
+apply ni* to 0.1.2 on toSortedList($2:NatMSet) .
+apply ni* to 0.1.1 on toSortedList($2:NatMSet) .
+apply cut* to 0.1.1.3 with $3:Nat = $4 .
+internalize .
+internalize 0.1 .
+internalize 0.2 .
+
+set goal N:Nat <= min(S:NeNatMSet) = True -> min(N:Nat : S:NeNatMSet) = N:Nat .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal N:Nat < min(S:NeNatMSet) = True -> min(N:Nat : S:NeNatMSet) = N:Nat .
+apply le to 0 with A:Nat < B:Nat = True -> A:Nat <= B:Nat = True .
+apply cut* to 0.2 with True = $1:Nat <= min($2:NeNatMSet) .
+apply gsi* to 0.1 .
+internalize .
+
+set goal N:Nat > min(S:NeNatMSet) = True -> min(N:Nat : S:NeNatMSet) = min(S:NeNatMSet) .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal N:Nat >= min(S:NeNatMSet) = True -> min(N:Nat : S:NeNatMSet) = min(S:NeNatMSet) .
+apply le to 0 with True = A:Nat > B:Nat \/ A:Nat = B:Nat \/ True = A:Nat < B:Nat .
+apply gsi* to 0.1 .
+apply sp* to 0.2 with True = $1:Nat > min($2:NeNatMSet) \/ $1:Nat = min($2:NeNatMSet) \/ True = $1:Nat < min($2:NeNatMSet) .
+apply le* to 0.2.2.1.1 with A:Nat <= B:Nat = True /\ B:Nat < A:Nat = True -> false .
+apply gsi* to 0.2.2.1.1.1 .
+internalize .
+
+set goal min(N:Nat : S2:NeNatMSet) = min(N:Nat : min(S2:NeNatMSet)) .
+apply ni* to 0 on min($1:Nat : min($2:NeNatMSet)) .
+internalize .
+
+set goal min(s A:Nat : s B:Nat) = s min(A:Nat : B:Nat) .
+apply ni* to 0 on min(s $1:Nat : s $2:Nat) .
+internalize .
+
+set goal min(s A:Nat : s B:Nat : s C:Nat) = s min(A:Nat : B:Nat : C:Nat) .
+apply ni* to 0 on min(s $1:Nat : s $2:Nat : s $3:Nat) .
+internalize .
+
+set goal min(S1:NeNatMSet : S2:NeNatMSet) = min(min(S1:NeNatMSet) : min(S2:NeNatMSet)) .
+apply eps to 0 .
+apply gsi* to 0.1 .
+apply sp* to 0.1.4 with $3 < min($4 : min($5 : $6)) = True \/ $3 = min($4 : min($5 : $6)) \/ $3 > min($4 : min($5 : $6)) = True .
+internalize .
+internalize 0.1 .
+
+set goal min(S1:NeNatMSet : S1:NeNatMSet) = min(S1:NeNatMSet) .
+apply gsi* to 0 .
+apply sp* to 0.2 with $2 < min($3) = True \/ $2 = min($3) \/ $2 > min($3) = True .
+internalize .
+
+set goal min(S1:NeNatMSet : S1:NeNatMSet : S2:NeNatMSet) = min(S1:NeNatMSet : S2:NeNatMSet) .
+apply cut* to 0 with min($2:NeNatMSet : $1:NeNatMSet : $1:NeNatMSet) = min(min($2:NeNatMSet) : min($1:NeNatMSet : $1:NeNatMSet)) .
+internalize .
+
+set goal 0 = min(0 : min($1:NeNatMSet)) .
+apply va to 0 on min($1:NeNatMSet) .
+apply gsi* to 0.1 on $2 .
+internalize .
+
+set goal min(0 : S1:NeNatMSet) = 0 .
+apply cut* to 0 with min(0 : $1:NeNatMSet) = min(0 : min($1:NeNatMSet)) .
+internalize .
+
+set goal N:Nat = min(N1:Nat : N2:Nat) -> N:Nat = min(N1:Nat) \/ N:Nat = min(N2:Nat) .
+apply gsi* to 0 .
+internalize .
+
+set goal N:Nat = min(S1:NeNatMSet : S2:NeNatMSet) -> N:Nat = min(S1:NeNatMSet) \/ N:Nat = min(S2:NeNatMSet) .
+apply cut* to 0 with $1:Nat = min(min($3:NeNatMSet) : min($2:NeNatMSet)) .
+internalize .
+
+set goal N:Nat <= M:Nat = True -> min(N:Nat : M:Nat : S2:NeNatMSet) = min(N:Nat : S2:NeNatMSet) .
+apply sp* to 0 with $2:Nat < min($3:NeNatMSet) = True \/ $2:Nat = min($3:NeNatMSet) \/ $2:Nat > min($3:NeNatMSet) = True .
+apply cut* to 0.3.1.1 with $1:Nat >= min($2:Nat : $3:NeNatMSet) = True .
+apply va to 0.3.1.1.2.1 on $2:Nat : $3:NeNatMSet .
+apply icc to 0.3.1.1.2.1.1 .
+apply cvul to 0.3.1.1.2.1.1.1 .
+apply icc to 0.3.1.1.2.1.1.1.1 .
+apply le* to 0.3.1.1.1.1.1 with B:Nat <= A:Nat = True /\ C:Nat < B:Nat = True -> C:Nat <= A:Nat = True .
+apply gsi* to 0.3.1.1.1.1.1.1 .
+internalize .
+
+set goal N:Nat <= min(S:NeNatMSet) = True -> min(N:Nat : S:NeNatMSet : S2:NeNatMSet) = min(N:Nat : S2:NeNatMSet) .
+apply cut* to 0 with min($1:Nat : $2:NeNatMSet) = min($1:Nat : min($3:NeNatMSet) : $2:NeNatMSet) .
+internalize .
+
+set goal N:Nat > min(S:NeNatMSet) = True -> min(N:Nat : S:NeNatMSet : S2:NeNatMSet) = min(S:NeNatMSet : S2:NeNatMSet) .
+apply cut* to 0 with min($3:NeNatMSet : $2:NeNatMSet) = min($2:NeNatMSet : min(min($3:NeNatMSet) : $1:Nat)) .
+undo 0.1 .
+apply icc to 0.1 .
+internalize .
+
+set goal min(S1:NeNatMSet) <= min(S2:NeNatMSet) = True -> min(S1:NeNatMSet : S2:NeNatMSet) = min(S1:NeNatMSet) .
+apply cut* to 0 with min($1:NeNatMSet) = min(min($2:NeNatMSet) : min($1:NeNatMSet)) .
+undo 0.1 .
+apply va* to 0.1 on min($1:NeNatMSet) .
+internalize .
+
+set goal A:Nat < B:Nat = True /\ A:Nat = B:Nat -> false .
+apply gsi* to 0 .
+internalize .
+
+set goal True = N:Nat < min(N1:Nat : N2:Nat) -> True = N:Nat < N2:Nat .
+apply gsi* to 0 .
+internalize .
+
+set goal True = N:Nat < min(S1:NeNatMSet : S2:NeNatMSet) -> True = N:Nat < min(S2:NeNatMSet) .
+apply cut* to 0 with $1:Nat < min(min($2:NeNatMSet) : min($3:NeNatMSet)) = True .
+internalize .
+
+set goal False = N:Nat inMSet S1:NeNatMSet : S2:NeNatMSet -> False = N:Nat inMSet S1:NeNatMSet .
+apply gsi* to 0 on $2 .
+apply sp* to 0.2 with $1:Nat = $4 \/ $1:Nat =nat= $4 = False .
+apply sp* to 0.1.1 with $1:Nat = $4:Nat \/ $1:Nat =nat= $4:Nat = False .
+internalize .
+
+set goal False = N:Nat inMSet S1:NatMSet : S2:NatMSet -> False = N:Nat inMSet S1:NatMSet .
+apply gsi* to 0 on $2 $3 .
+internalize .
+
+set goal False = N:Nat inMSet S1:NeNatMSet : S2:NeNatMSet -> False = N:Nat inMSet S1:NeNatMSet /\ False = N:Nat inMSet S2:NeNatMSet .
+apply cut* to 0 with False = $1:Nat inMSet $3:NeNatMSet .
+internalize .
+
+set goal min(S1:NeNatMSet) inMSet S1:NeNatMSet = True .
+apply gsi* to 0 .
+apply sp* to 0.2 with $2 < min($3) = True \/ $2 = min($3) \/ $2 > min($3) = True .
+internalize .
+
+set goal A:Nat inMSet S1:NeNatMSet = True -> A:Nat : (S1:NeNatMSet diffMSet A:Nat) = S1:NeNatMSet .
+apply gsi* to 0 .
+internalize .
+
+set goal True = N:Nat inMSet S:NeNatMSet -> N:Nat diffMSet S:NeNatMSet = nilMSet .
+apply ni* to 0 on $1:Nat diffMSet $2:NeNatMSet .
+internalize .
+
+set goal False = N:Nat inMSet S1:NatMSet -> N:Nat : S2:NatMSet diffMSet S1:NatMSet = N:Nat : (S2:NatMSet diffMSet S1:NatMSet) .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal S:NatMSet : S1:NatMSet diffMSet S:NatMSet : S2:NatMSet = S1:NatMSet diffMSet S2:NatMSet .
+apply gsi* to 0 .
+internalize .
+
+set goal N:Nat =nat= M:Nat = True -> N:Nat : S1:NatMSet diffMSet M:Nat : S2:NatMSet = S1:NatMSet diffMSet S2:NatMSet .
+apply cut* to 0 with $2:Nat = $1:Nat .
+internalize .
+
+set goal N:Nat diffMSet M1:Nat : M2:Nat = (N:Nat diffMSet M1:Nat) diffMSet M2:Nat .
+apply sp* to 0 with $3:Nat = $1:Nat \/ $3:Nat =nat= $1:Nat = False .
+apply sp* to 0.3.1 with True = $3:Nat =nat= $2:Nat \/ False = $3:Nat =nat= $2:Nat .
+internalize .
+
+set goal False = N:Nat inMSet M:Nat -> M:Nat diffMSet N:Nat : S2:NatMSet = M:Nat diffMSet S2:NatMSet .
+apply gsi* to 0 on $3 .
+apply sp* to 0.1.1 with False = $1:Nat =nat= $4:Nat \/ True = $1:Nat =nat= $4:Nat .
+apply sp* to 0.3.1 with False = $1:Nat inMSet $4 : $5 : $2:Nat \/ True = $1:Nat inMSet $4 : $5 : $2:Nat .
+apply cut* to 0.3.1.2.1 with False = $1:Nat inMSet $4 : $5 .
+apply cut* to 0.3.1.3.1 with True = $1:Nat inMSet $4 : $5 .
+internalize .
+
+set goal S1:NatMSet diffMSet N:Nat : M:Nat = (S1:NatMSet diffMSet M:Nat) diffMSet N:Nat .
+apply gsi* to 0 on $3 .
+apply sp* to 0.3 with $4 inMSet $1:Nat = True \/ $4 inMSet $1:Nat = False .
+apply sp* to 0.3.2.1.1 with $4 inMSet $2:Nat = True \/ $4 inMSet $2:Nat = False .
+internalize .
+
+set goal M:Nat diffMSet N:Nat : S2:NatMSet = (M:Nat diffMSet N:Nat) diffMSet S2:NatMSet .
+apply gsi* to 0 on $3 .
+apply sp* to 0.3 with $1:Nat = $2:Nat \/ $1:Nat =nat= $2:Nat = False .
+internalize .
+
+set goal False = $1:Nat inMSet S:NatMSet : $2:Nat \/ True = $1:Nat =nat= $2:Nat \/ True = $1:Nat inMSet S:NatMSet .
+apply gsi* to 0 on $3 .
+apply sp* to 0.1.1 with $1:Nat = $4:Nat \/ $1:Nat =nat= $4:Nat = False .
+apply sp* to 0.3 with $1:Nat = $4 \/ $1:Nat =nat= $4 = False .
+internalize .
+
+set goal M:Nat diffMSet N:Nat : S2:NatMSet = (M:Nat diffMSet S2:NatMSet) diffMSet N:Nat .
+apply gsi* to 0 on $3 .
+apply sp* to 0.3 with $1:Nat inMSet $4 : $5 : $2:Nat = True \/ $1:Nat inMSet $4 : $5 : $2:Nat = False .
+apply cut* to 0.3.2.1 with False = $1:Nat inMSet $4 : $5 .
+apply cut* to 0.3.2.1.2.1 with False = $1:Nat inMSet $2:Nat .
+apply sp* to 0.3.3.1 with True = $1:Nat inMSet $4 : $5 \/ True = $1:Nat inMSet $2:Nat \/ False = $1:Nat inMSet $4 : $5 : $2:Nat .
+apply sp* to 0.3.3.1.3.1 with True = $1:Nat inMSet $4 : $5 \/ False = $1:Nat inMSet $4 : $5 .
+internalize .
+
+set goal S:NatMSet = N:Nat : S:NatMSet -> false .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal N:Nat inMSet S:NatMSet = True /\ S:NatMSet = S:NatMSet diffMSet N:Nat -> false .
+apply gsi* to 0 on $2 .
+apply cut* to 0.1.1 with $1:Nat = $3:Nat .
+apply sp* to 0.3 with $1:Nat = $3 \/ $1:Nat =nat= $3 = False .
+apply cut* to 0.3.2 with True = $1:Nat inMSet $4 .
+apply cut* to 0.3.2.2 with $3 : $4 diffMSet $1:Nat = $3 : ($4 diffMSet $1:Nat) .
+apply cut* to 0.3.2.2.2.1 with $4 = ($4 diffMSet $1:Nat) .
+internalize .
+
+set goal S:NeNatMSet = S:NeNatMSet diffMSet min(S:NeNatMSet) -> false .
+apply cut* to 0 with min($1:NeNatMSet) inMSet $1:NeNatMSet = True .
+internalize .
+
+set goal M:Nat = N:Nat diffMSet M:Nat -> False = N:Nat =nat= M:Nat .
+apply ni* to 0 on $2:Nat diffMSet $1:Nat .
+internalize .
+
+set goal S1:NatMSet = S2:NatMSet -> S1:NatMSet diffMSet S3:NatMSet = S2:NatMSet diffMSet S3:NatMSet .
+apply gsi* to 0 on $3 .
+internalize .
+
+set goal N:Nat inMSet S:NatMSet = False -> S:NatMSet diffMSet N:Nat : S1:NatMSet = S:NatMSet diffMSet S1:NatMSet .
+apply gsi* to 0 on $3 .
+apply sp* to 0.3 with $4 inMSet $2:NatMSet = True \/ $4 inMSet $2:NatMSet = False .
+apply cut* to 0.3.2.1 with False = $4 inMSet $2:NatMSet : $1:Nat .
+apply cut* to 0.3.2.1.2.1 with ($5 diffMSet $2:NatMSet) = ($5 diffMSet $1:Nat : $2:NatMSet) .
+apply cut* to 0.3.2.1.2.1.1 with False = $1:Nat inMSet $5 .
+apply gsi* to 0.3.2.1.1 on $2 .
+apply cut* to 0.3.2.1.1.1.1.1 with False = $1:Nat inMSet $4 .
+apply cut* to 0.3.2.1.1.2.1 with False = $1:Nat inMSet $4 .
+apply cut* to 0.3.2.1.1.3 with False = $4 inMSet $7 .
+apply sp* to 0.3.2.1.1.3.2 with $1:Nat =nat= $4 = False \/ $1:Nat = $4 .
+apply cut* to 0.3.3 with False = $1:Nat inMSet $5 .
+apply cut! to 0.3.3.2 with $2:NatMSet = $4 : ($2:NatMSet diffMSet $4) .
+undo 0.3.3.2 .
+apply cut* to 0.3.3.2 with $2:NatMSet = $4 : ($2:NatMSet diffMSet $4) .
+apply cut* to 0.3.3.2.2 with $4 : $5 diffMSet $2:NatMSet = $4 : $5 diffMSet $4 : ($2:NatMSet diffMSet $4) .
+undo 0.3.3.2.2.1 .
+apply icc* to 0.3.3.2.2.1 .
+apply cut to 0.3.3.2.2.2.1.1 with $4 : $5 diffMSet $2:NatMSet : $1:Nat = $4 : $5 diffMSet ($4 : ($2:NatMSet diffMSet $4)) : $1:Nat .
+apply icc to 0.3.3.2.2.2.1.1.1 .
+apply cut* to 0.3.3.2.2.2.1.1.2 with $5 diffMSet ($2:NatMSet diffMSet $4) = $4 : $5 diffMSet $4 : $1:Nat : ($2:NatMSet diffMSet $4) .
+internalize .
+
+set goal False = N:Nat inMSet S:NatMSet -> S:NatMSet = S:NatMSet diffMSet N:Nat .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal True = N:Nat inMSet S:NatMSet -> S1:NatMSet diffMSet (S:NatMSet diffMSet N:Nat) = N:Nat : S1:NatMSet diffMSet S:NatMSet .
+apply sp* to 0 with $1:Nat inMSet $3:NatMSet = True \/ $1:Nat inMSet $3:NatMSet = False .
+apply gsi* to 0.3 on $2 .
+apply gsi* to 0.3.2.1 .
+apply gsi* to 0.3.1 on $3 .
+apply sp* to 0.3.1.3 with True = $1:Nat inMSet $5 \/ True = $1:Nat inMSet $6 \/ False = $1:Nat inMSet $5 : $6 .
+apply sp* to 0.3.1.3.4 with True = $1:Nat inMSet $5 \/ False = $1:Nat inMSet $5 .
+apply sp* to 0.3.1.3.4.2.1.1 with $4:Nat =nat= $5 = False \/ $4:Nat = $5 .
+apply va to 0.3.3 on $3:NatMSet diffMSet $1:Nat .
+apply cut* to 0.3.3.1 with $6:NatMSet : $1:Nat = $3:NatMSet .
+apply cut* to 0.3.3.1.1 with $3:NatMSet = ($3:NatMSet diffMSet $1:Nat) : $1:Nat .
+apply va to 0.3.3.1.2 on $4 : $5 .
+apply le* to 0.3.3.1.2.1 with $3:NatMSet = $6:NatMSet : $1:Nat -> $7:NeNatMSet diffMSet $6:NatMSet = $7:NeNatMSet : $1:Nat diffMSet $3:NatMSet .
+apply subl! to 0.3.3.1.2.1.1 .
+internalize .
+
+set goal False = N:Nat inMSet S:NatMSet -> False = N:Nat inMSet (S:NatMSet diffMSet S1:NatMSet) .
+apply gsi* to 0 on $3 .
+apply sp* to 0.3 with $1:Nat = $4 \/ $1:Nat =nat= $4 = False .
+apply cut* to 0.3.2 with False = $1:Nat inMSet $5 .
+apply sp* to 0.3.2.2 with $4 inMSet $2:NatMSet = True \/ $4 inMSet $2:NatMSet = False .
+apply sp* to 0.1.1 with $4:Nat inMSet $2:NatMSet = True \/ $4:Nat inMSet $2:NatMSet = False .
+internalize .
+
+set goal False = N:Nat inMSet S:NatMSet /\ N:Nat : S1:NatMSet = S:NatMSet -> false .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal S:NatMSet : S1:NeNatMSet = S:NatMSet diffMSet S2:NatMSet -> false .
+apply cut* to 0 with $3:NatMSet : $1:NeNatMSet : $2:NatMSet = $3:NatMSet .
+apply cut* to 0.2 with nilMSet = $2:NatMSet : $1:NeNatMSet .
+apply gsi* to 0.2.2.1 on $1 .
+apply gsi* to 0.1 on $3 .
+apply sp! to 0.1.1.1 with $4:Nat inMSet $2:NatMSet = True \/ $4:Nat inMSet $2:NatMSet = False .
+apply cut! to 0.1.1.1.2 with $4:Nat diffMSet $2:NatMSet = $4:Nat .
+apply le* to 0.1.1.1.2.1 with False = $4:Nat inMSet $2:NatMSet -> $4:Nat = $4:Nat diffMSet $2:NatMSet .
+apply va* to 0.1.1.1.2.2 on $4:Nat diffMSet $2:NatMSet .
+apply cut! to 0.1.1.1.3 with $4:Nat diffMSet $2:NatMSet = nilMSet .
+apply va* to 0.1.1.1.3.2 on $4:Nat diffMSet $2:NatMSet .
+apply le* to 0.1.1.1.3.1 with True = $4:Nat inMSet $2:NatMSet -> nilMSet = $4:Nat diffMSet $2:NatMSet .
+apply sp* to 0.1.3.1 with $4 inMSet $2:NatMSet = True \/ $4 inMSet $2:NatMSet = False .
+apply cut* to 0.1.3.1.2 with $4 : $5 diffMSet $2:NatMSet = $4 : ($5 diffMSet $2:NatMSet) .
+apply cut! to 0.1.3.1.2.2.1 with $5 : $1:NeNatMSet = $5 diffMSet $2:NatMSet .
+apply va* to 0.1.3.1.2.2.1.1 on $4 : $5 : $1:NeNatMSet .
+apply va* to 0.1.3.1.2.2.1.2 on $4 : $5 : $1:NeNatMSet .
+apply cut* to 0.1.3.1.3 with $4 : $5 diffMSet $2:NatMSet = $5 diffMSet ($2:NatMSet diffMSet $4) .
+internalize .
+
+set goal True = $1:Nat inMSet $3:NatMSet /\ $4:NatMSet = $3:NatMSet diffMSet $1:Nat -> $4:NatMSet : $1:Nat = $3:NatMSet .
+apply gsi* to 0 on $3 $2 .
+apply cut* to 0.3.1 with $4 = $1:Nat .
+apply cut* to 0.1.1 with $4:Nat = $1:Nat .
+apply sp* to 0.9 with True = $1:Nat inMSet $4 \/ True = $1:Nat inMSet $5 \/ False = $1:Nat inMSet $4 : $5 .
+apply cut* to 0.9.3.1 with $4 = $1:Nat .
+apply cut* to 0.9.4 with $4 : $5 = ($4 : $5 diffMSet $1:Nat) : $1:Nat .
+apply sp* to 0.8 with $1:Nat inMSet $4 = True \/ $1:Nat inMSet $5 = True \/ $1:Nat inMSet $4 : $5 = False .
+apply cut* to 0.8.3.1 with $4 = $1:Nat .
+apply cvul! to 0.8.3.1.2.1.1 .
+apply sp* to 0.8.4 with $4 = $1:Nat \/ $4 =nat= $1:Nat = False .
+apply cut* to 0.8.4.2 with nilMSet = $4 : ($5 diffMSet $1:Nat) .
+apply cut* to 0.8.4.2.1 with $4 : $5 diffMSet $1:Nat = $4 : ($5 diffMSet $1:Nat) .
+apply sp* to 0.7 with $4 = $1:Nat \/ $4 =nat= $1:Nat = False .
+apply cut* to 0.7.2 with $6 = $4 : ($5 diffMSet $1:Nat) .
+apply cut* to 0.7.2.1 with $4 : $5 diffMSet $1:Nat = $4 : ($5 diffMSet $1:Nat) .
+apply cut* to 0.7.2.2 with $4 : $5 = ($4 : ($5 diffMSet $1:Nat)) : $1:Nat .
+apply sp* to 0.7.2.2.1.1 with True = $1:Nat inMSet $4 \/ True = $1:Nat inMSet $5 \/ False = $1:Nat inMSet $4 : $5 .
+undo 0.7.2.2.2 .
+apply icc to 0.7.2.2.2 .
+internalize .
+
+set goal False = M:Nat =nat= N:Nat /\ S:NatMSet = N:Nat diffMSet M:Nat : S1:NatMSet -> S:NatMSet = N:Nat diffMSet S1:NatMSet .
+apply cut* to 0 with $4:NatMSet = ($2:Nat diffMSet $1:Nat) diffMSet $3:NatMSet .
+undo 0.2 .
+apply cut* to 0.2 with $2:Nat diffMSet $1:Nat = $2:Nat .
+undo 0.2.2 .
+apply cut* to 0.2.2 with ($2:Nat diffMSet $1:Nat) diffMSet $3:NatMSet = $2:Nat diffMSet $3:NatMSet .
+internalize .
+
+set goal False = N:Nat inMSet S2:NatMSet /\ S:NatMSet = N:Nat diffMSet S2:NatMSet : S1:NatMSet -> S:NatMSet = N:Nat diffMSet S1:NatMSet .
+apply gsi* to 0 on $3 .
+apply cut* to 0.3 with False = $1:Nat inMSet $5 .
+apply cut* to 0.3.2.1 with $4:NatMSet = $1:Nat diffMSet $6 : $2:NatMSet .
+apply cut* to 0.3.2.1.2 with False = $1:Nat inMSet $6 .
+internalize .
+
+set goal nilMSet = $1:Nat diffMSet $2:NatMSet -> $1:Nat inMSet $2:NatMSet = True .
+apply cbeqr to 0 .
+apply cut* to 0.1 with nilMSet = $1:Nat diffMSet nilMSet .
+internalize .
+
+set goal nilMSet = $1:Nat : $5:NatMSet diffMSet $3:NatMSet -> $1:Nat inMSet $3:NatMSet = True .
+apply cbeqr to 0 .
+apply gsi* to 0.1 on $2 .
+apply cut* to 0.1.1.1 with nilMSet = $1:Nat : ($3:NatMSet diffMSet $4:Nat) .
+apply cut* to 0.1.1.1.1 with $1:Nat : $3:NatMSet diffMSet $4:Nat = $1:Nat : ($3:NatMSet diffMSet $4:Nat) .
+apply cut* to 0.1.3 with nilMSet = $1:Nat : ($3:NatMSet diffMSet $4 : $5) .
+apply cut* to 0.1.3.1 with $1:Nat : $3:NatMSet diffMSet $4 : $5 = $1:Nat : ($3:NatMSet diffMSet $4 : $5) .
+internalize .
+
+set goal S:NatMSet = S:NatMSet diffMSet N:Nat : S1:NatMSet /\ N:Nat inMSet S:NatMSet = True -> false .
+apply cbeql! to 0 .
+apply gsi* to 0.1.1 on $3 .
+apply sp* to 0.1.1.1.1 with $4:Nat = $1:Nat \/ $4:Nat =nat= $1:Nat = False .
+apply sp* to 0.1.1.3 with $4 = $1:Nat \/ $4 =nat= $1:Nat = False .
+undo 0.1.1.3.2 .
+apply icc to 0.1.1.3.2 .
+apply sp* to 0.1.1.3.2.1 with $4 inMSet $1:Nat : $2:NatMSet = True \/ $4 inMSet $1:Nat : $2:NatMSet = False .
+apply cut* to 0.1.1.3.2.1.2 with $4 : $5 = $4 : ($5 diffMSet $1:Nat : $2:NatMSet) .
+apply cut* to 0.1.1.3.2.1.2.2 with $5 = $5 diffMSet $1:Nat : $2:NatMSet .
+apply cut* to 0.1.1.3.2.1.2.1 with $4 : $5 diffMSet $1:Nat : $2:NatMSet = $4 : ($5 diffMSet $1:Nat : $2:NatMSet) .
+apply cut* to 0.1.1.3.2.1.3 with $5 = $5 diffMSet $1:Nat : ($2:NatMSet diffMSet $4) .
+apply va to 0.1.1.3.2.1.3.1 on $2:NatMSet diffMSet $4 .
+apply cut* to 0.1.1.3.2.1.3.1.1 with $4 : $6:NatMSet = $2:NatMSet .
+apply cut* to 0.1.1.3.2.1.3.1.1.1 with True = $4 inMSet $2:NatMSet .
+apply cut* to 0.1.1.3.2.1.3.1.1.2 with $4 : $5 = $4 : $5 diffMSet $4 : $6:NatMSet : $1:Nat .
+undo 0.1.1.3.2.1.3.1.1.2.1 .
+apply icc to 0.1.1.3.2.1.3.1.1.2.1 .
+internalize .
+
+set goal S:NatMSet = S:NatMSet diffMSet S1:NatMSet -> S1:NatMSet diffMSet S:NatMSet = S1:NatMSet .
+apply gsi* to 0 on $1 .
+apply gsi* to 0.1 on $2 .
+apply sp* to 0.1.1 with $4:Nat = $3:Nat \/ $4:Nat =nat= $3:Nat = False .
+apply sp* to 0.1.3 with $4 = $3:Nat \/ $4 =nat= $3:Nat = False .
+apply cut* to 0.1.3.2.1 with $4 : $5 = $4 : ($5 diffMSet $3:Nat) .
+apply cut* to 0.1.3.2.1.2 with $5 = $5 diffMSet $3:Nat .
+apply cut* to 0.1.3.2.1.1 with $4 : $5 diffMSet $3:Nat = $4 : ($5 diffMSet $3:Nat) .
+apply sp* to 0.3 with $3 inMSet $2:NatMSet = True \/ $3 inMSet $2:NatMSet = False .
+apply cut* to 0.3.2.1 with $4 = ($4 diffMSet $2:NatMSet) .
+apply cut* to 0.3.2.1.1 with $2:NatMSet = $2:NatMSet diffMSet $4 .
+apply cut! to 0.3.2.1.1.1 with $2:NatMSet diffMSet $3 : $4 = $2:NatMSet diffMSet $4 .
+apply cs to 0.3.2.1.1.1.1 .
+apply va* to 0.3.2.1.1.1.2 on $2:NatMSet diffMSet $4 .
+internalize .
+
+set goal False = N:Nat inMSet S1:NatMSet -> S1:NatMSet diffMSet N:Nat : S2:NatMSet = S1:NatMSet diffMSet S2:NatMSet .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal False = $4:Nat inMSet $1:NatMSet /\ False = $4:Nat inMSet $2:NatMSet -> False = $4:Nat inMSet $1:NatMSet : $2:NatMSet .
+apply gsi* to 0 on $1 .
+apply cut* to 0.3 with False = $3:Nat inMSet $5 .
+apply cut* to 0.3.2 with False = $3:Nat inMSet $4 .
+internalize .
+
+set goal False = $4:Nat inMSet $1:NatMSet /\ True = $4:Nat inMSet $2:NatMSet -> True = $4:Nat inMSet $1:NatMSet : $2:NatMSet .
+apply gsi* to 0 on $1 .
+internalize .
+
+set goal (S:NatMSet diffMSet S1:NatMSet) diffMSet S2:NatMSet = S:NatMSet diffMSet S2:NatMSet : S1:NatMSet .
+apply gsi* to 0 on $3 .
+
+apply sp! to 0.1 with $4:Nat inMSet $1:NatMSet = True \/ $4:Nat inMSet $1:NatMSet = False .
+apply sp! to 0.1.2 with $4:Nat inMSet $2:NatMSet = True \/ $4:Nat inMSet $2:NatMSet = False .
+apply cut* to 0.1.2.2 with False = $4:Nat inMSet $1:NatMSet : $2:NatMSet .
+apply cut* to 0.1.2.3 with True = $4:Nat inMSet $1:NatMSet : $2:NatMSet .
+apply sp! to 0.1.3 with $4:Nat inMSet $2:NatMSet = True \/ $4:Nat inMSet $2:NatMSet = False .
+apply cut* to 0.1.3.2 with True = $4:Nat inMSet $1:NatMSet : $2:NatMSet .
+apply cut* to 0.1.3.3 with True = $4:Nat inMSet $1:NatMSet : $2:NatMSet .
+
+apply sp! to 0.3 with $4 inMSet $1:NatMSet = True \/ $4 inMSet $1:NatMSet = False .
+apply sp! to 0.3.2 with $4 inMSet $2:NatMSet = True \/ $4 inMSet $2:NatMSet = False .
+apply cut* to 0.3.2.2 with False = $4 inMSet $1:NatMSet : $2:NatMSet .
+apply cut* to 0.3.2.3 with True = $4 inMSet $1:NatMSet : $2:NatMSet .
+apply sp! to 0.3.3 with $4 inMSet $2:NatMSet = True \/ $4 inMSet $2:NatMSet = False .
+apply cut* to 0.3.3.2 with True = $4 inMSet $1:NatMSet : $2:NatMSet .
+apply cut* to 0.3.3.3 with True = $4 inMSet $1:NatMSet : $2:NatMSet .
+
+apply cut* to 0.3.3.3.2.1 with $1:NatMSet : $2:NatMSet diffMSet $4 = ($1:NatMSet diffMSet $4) : $2:NatMSet .
+apply cut* to 0.3.3.3.2.1.1 with $2:NatMSet : $4 : ($1:NatMSet diffMSet $4) = $1:NatMSet : $4 : $2:NatMSet diffMSet $4 .
+apply cut* to 0.3.3.2.2.1 with $1:NatMSet : $2:NatMSet diffMSet $4 = ($1:NatMSet diffMSet $4) : $2:NatMSet .
+apply cut* to 0.3.3.2.2.1.1 with $2:NatMSet : $4 : ($1:NatMSet diffMSet $4) = $1:NatMSet : $4 : $2:NatMSet diffMSet $4 .
+apply cut* to 0.3.2.3.2.1 with $1:NatMSet : $2:NatMSet diffMSet $4 = ($2:NatMSet diffMSet $4) : $1:NatMSet .
+apply cut* to 0.3.2.3.2.1.1 with $1:NatMSet : $4 : ($2:NatMSet diffMSet $4) = $2:NatMSet : $4 : $1:NatMSet diffMSet $4 .
+internalize .
+
+set goal (S:NatMSet diffMSet S1:NatMSet) diffMSet S2:NatMSet = (S:NatMSet diffMSet S2:NatMSet) diffMSet S1:NatMSet .
+apply eps to 0 .
+internalize .
+
+set goal ($1:Nat : $2:NatMSet diffMSet $3:NatMSet) diffMSet $1:Nat = $2:NatMSet diffMSet $3:NatMSet .
+apply eps to 0 .
+internalize .
+
+set goal True = N:Nat inMSet S:NeNatMSet -> N:Nat : S1:NeNatMSet diffMSet S:NeNatMSet = S1:NeNatMSet diffMSet (S:NeNatMSet diffMSet N:Nat) .
+apply gsi* to 0 on $2 $3 .
+internalize .
+
+set goal False = N:Nat inMSet S1:NeNatMSet /\ False = N:Nat inMSet S2:NeNatMSet /\ True = N:Nat inMSet S1:NeNatMSet : S2:NeNatMSet -> false .
+apply gsi* to 0 on $3 .
+apply cut* to 0.1.1 with $1:Nat inMSet $2:NeNatMSet : $4:Nat = $1:Nat inMSet $2:NeNatMSet .
+apply sp* to 0.2 with $4 = $1:Nat \/ $4 =nat= $1:Nat = False .
+apply cut* to 0.2.2 with True = $1:Nat inMSet $5 : $2:NeNatMSet .
+apply cut* to 0.2.2.2 with False = $1:Nat inMSet $5 .
+internalize .
+
+set goal S1:NatMSet =MSet= S2:NatMSet = True <-> N:Nat : S1:NatMSet =MSet= N:Nat : S2:NatMSet = True .
+apply deq to 0 .
+apply gsi* to 0.1 on $3 $2 .
+apply gsi* to 0.2 on $3 $2 .
+internalize 0.1 .
+internalize 0.2 .
+internalize .
+
+set goal N:Nat inMSet S1:NatMSet = True /\ N:Nat inMSet S2:NatMSet = False /\ S1:NatMSet = S2:NatMSet -> false .
+apply gsi* to 0 on $3 $2 .
+internalize .
+
+set goal S1:NatMSet = S2:NatMSet -> S1:NatMSet =MSet= S2:NatMSet = True .
+apply cvul! to 0 .
+internalize .
+
+set goal True = $9:NatMSet =MSet= $8:NatMSet : $7:Nat -> True = $7:Nat inMSet $9:NatMSet .
+apply cbeql to 0 .
+apply cbeqr! to 0.1 .
+apply cs to 0.1.1.1 .
+internalize .
+
+set goal True = $2:NatMSet =MSet= $4:Nat : $5:NatMSet -> True = $2:NatMSet diffMSet $4:Nat =MSet= $5:NatMSet .
+apply gsi to 0 on $1 .
+apply sp* to 0.1 with $4:Nat = $2:Nat \/ $4:Nat =nat= $2:Nat = False .
+apply gsi* to 0.1.3.1 on $3 .
+apply gsi* to 0.2 on $3 .
+apply sp to 0.3 with $4 = $2:Nat \/ $4 =nat= $2:Nat = False .
+apply eps to 0.3.1 .
+apply cvul! to 0.3.3 .
+apply cut* to 0.3.2 with ($4 : $5 diffMSet $2:Nat) = $4 : ($5 diffMSet $2:Nat) .
+apply va to 0.3.2.2.1 on $5 diffMSet $2:Nat .
+apply cut* to 0.3.2.2.1.1 with $2:Nat : $6:NatMSet = $5 .
+apply cut* to 0.3.2.2.1.1.2 with True = $4 : $6:NatMSet : $2:Nat =MSet= $3:NatMSet : $2:Nat .
+undo 0.3.2.2.1.1.2.1 .
+apply cut* to 0.3.2.2.1.1.2.1 with $4 : $5 = $4 : $6:NatMSet : $2:Nat .
+undo 0.3.2.2.1.1.2.1.2 .
+apply icc to 0.3.2.2.1.1.2.1.2 .
+apply cut* to 0.3.2.2.1.1.1 with $2:Nat inMSet $5 = True .
+apply cut* to 0.3.2.2.1.1.1.1 with True = $2:Nat inMSet $4 : $5 .
+internalize .
+
+set goal $4:Nat inMSet $2:NatMSet = True /\ True = $2:NatMSet diffMSet $4:Nat =MSet= $5:NatMSet -> True = $2:NatMSet =MSet= $4:Nat : $5:NatMSet .
+apply gsi* to 0 on $1 .
+apply cut* to 0.1.1 with $2:Nat = $4:Nat .
+apply sp* to 0.3 with $2:Nat = $4 \/ $2:Nat =nat= $4 = False .
+apply cut* to 0.3.2 with True = $2:Nat inMSet $5 .
+apply cut* to 0.3.2.2 with ($4 : $5 diffMSet $2:Nat) = $4 : ($5 diffMSet $2:Nat) .
+apply cut* to 0.3.2.2.2.1 with True = $3:NatMSet diffMSet $4 =MSet= $5 diffMSet $2:Nat .
+apply va to 0.3.2.2.2.1.2 on $3:NatMSet diffMSet $4 .
+apply cut* to 0.3.2.2.2.1.2.1 with $6:NatMSet : $4 = $3:NatMSet .
+apply cut* to 0.3.2.2.2.1.2.1.1 with $4 : $6:NatMSet = $4 : ($3:NatMSet diffMSet $4) .
+undo 0.3.2.2.2.1.2.1.1.2 .
+apply cut* to 0.3.2.2.2.1.2.1.1.2 with $4 inMSet $3:NatMSet = True .
+apply cut* to 0.3.2.2.2.1.2.1.2 with True = $4 : $5 =MSet= $4 : $6:NatMSet : $2:Nat .
+undo 0.3.2.2.2.1.2.1.2.2 .
+apply va* to 0.3.2.2.2.1.2.1.2.2 on $4 : $6:NatMSet .
+internalize .
+
+set goal S1:NatMSet =MSet= S2:NatMSet = True -> S1:NatMSet diffMSet N:Nat =MSet= S2:NatMSet diffMSet N:Nat = True .
+apply gsi* to 0 on $3 .
+apply gsi* to 0.2.1 on $2 .
+apply gsi* to 0.1 on $2 .
+apply cut* to 0.1.1.1 with $4:Nat = $5:Nat .
+apply cut* to 0.3 with $2:NatMSet diffMSet $4 =MSet= $5 = True .
+apply cut* to 0.3.2 with $4 inMSet $2:NatMSet = True .
+apply sp* to 0.3.2.2 with $4 = $1:Nat \/ $4 =nat= $1:Nat = False .
+apply cut* to 0.3.2.2.2.1 with True = ($5 diffMSet $1:Nat) =MSet= ($2:NatMSet diffMSet $1:Nat) diffMSet $4 .
+apply va* to 0.3.2.2.2.1.1.1 on $2:NatMSet diffMSet $4 .
+apply cut* to 0.3.2.2.2.1.1.1.1 with $6:NatMSet : $4 = $2:NatMSet .
+apply cut* to 0.3.2.2.2.1.1.1.1.2 with True = ($5 diffMSet $1:Nat) =MSet= ($4 : $6:NatMSet diffMSet $4 : $1:Nat) .
+undo 0.3.2.2.2.1.1.1.1.2.2 .
+apply va* to 0.3.2.2.2.1.1.1.1.2.2 on $4 : $6:NatMSet .
+apply va* to 0.3.2.2.2.1.2.1 on $2:NatMSet diffMSet $4 .
+apply cut* to 0.3.2.2.2.1.2.1.1 with $6:NatMSet : $4 = $2:NatMSet .
+apply cut* to 0.3.2.2.2.1.2.1.1.2 with True = $4 : ($5 diffMSet $1:Nat) =MSet= ($4 : $6:NatMSet diffMSet $1:Nat) .
+undo 0.3.2.2.2.1.2.1.1.2.1 .
+apply cut* to 0.3.2.2.2.1.2.1.1.2.1 with True = $4 : ($5 diffMSet $1:Nat) =MSet= $4 : ($6:NatMSet diffMSet $1:Nat) .
+undo 0.3.2.2.2.1.2.1.1.2.1.2 .
+apply cut* to 0.3.2.2.2.1.2.1.1.2.1.2 with ($4 : $6:NatMSet diffMSet $1:Nat) = $4 : ($6:NatMSet diffMSet $1:Nat) .
+internalize .
+
+set goal True = S:NatMSet =MSet= S1:NeNatMSet : S:NatMSet -> false .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal False = S:NatMSet =MSet= S1:NeNatMSet : S:NatMSet .
+apply cbeqr* to 0 .
+internalize .
+
+set goal S1:NatMSet = S2:NatMSet <-> S1:NatMSet =MSet= S2:NatMSet = True .
+apply deq* to 0 .
+apply gsi! to 0.1 on $1 .
+apply gsi* to 0.1.2 on $2 .
+apply gsi* to 0.1.1 on $2 .
+apply cut* to 0.1.3 with True = $2:NatMSet diffMSet $3 =MSet= $4 .
+apply cut* to 0.1.3.2 with $4 = ($2:NatMSet diffMSet $3) .
+undo 0.1.3.2.2 .
+apply sp* to 0.1.3.2.2 with $3 inMSet $2:NatMSet = True \/ $3 inMSet $2:NatMSet = False .
+apply cut* to 0.1.3.2.2.2.1 with $3 : $4 = $3 :($2:NatMSet diffMSet $3) .
+undo 0.1.3.2.2.2.1 .
+apply cut* to 0.1.3.2.2.2.1 with $4 = $2:NatMSet .
+apply cut* to 0.1.3.2.2.2.1.1 with $2:NatMSet diffMSet $3 = $2:NatMSet .
+internalize .
+internalize 0.1 .
+internalize 0.2 .
+
+set goal True = $2:NatMSet =MSet= $4:NatMSet : $5:NatMSet -> True = $2:NatMSet diffMSet $4:NatMSet =MSet= $5:NatMSet .
+apply cut* to 0 with $1:NatMSet = $2:NatMSet : $3:NatMSet .
+internalize .
+
+set goal A:NeNatMSet : B:NatMSet =MSet= C:NatMSet = True -> B:NatMSet =MSet= C:NatMSet = False .
+apply cut* to 0 with $3:NatMSet = $2:NatMSet : $1:NeNatMSet .
+apply subl! to 0.2.1 .
+internalize .
+
+set goal N:Nat inMSet S1:NatMSet = True /\ N:Nat inMSet S2:NatMSet = False -> S1:NatMSet =MSet= S2:NatMSet = False .
+apply cbeql! to 0 .
+apply cbeql! to 0.1.1 .
+apply cbeqr to 0.1.1.1.1 .
+apply cut* to 0.1.1.1.1.1 with $2:NatMSet = $3:NatMSet .
+internalize .
+
+set goal A:NatMSet =MSet= B:NatMSet = True /\ C:NatMSet =MSet= B:NatMSet = True -> A:NatMSet =MSet= C:NatMSet = True .
+apply cut* to 0 with $1:NatMSet = $2:NatMSet .
+internalize .
+
+set goal S1:NatMSet diffMSet S2:NatMSet = S1:NatMSet diffMSet S4:NatMSet -> S1:NatMSet diffMSet S2:NatMSet : N:Nat = S1:NatMSet diffMSet S4:NatMSet : N:Nat .
+apply cut* to 0 with $2:NatMSet diffMSet $3:NatMSet : $1:Nat = ($2:NatMSet diffMSet $3:NatMSet) diffMSet $1:Nat .
+undo 0.2 .
+apply cut* to 0.2 with $2:NatMSet diffMSet $4:NatMSet : $1:Nat = ($2:NatMSet diffMSet $4:NatMSet) diffMSet $1:Nat .
+undo 0.2.2 .
+apply icc to 0.2.2 .
+internalize .
+
+set goal S1:NatMSet : N:Nat diffMSet S2:NatMSet = S1:NatMSet : N:Nat diffMSet S4:NatMSet -> S1:NatMSet diffMSet S2:NatMSet = S1:NatMSet diffMSet S4:NatMSet .
+apply cut* to 0 with $1:Nat : $2:NatMSet diffMSet $1:Nat : $3:NatMSet = $1:Nat : $2:NatMSet diffMSet $1:Nat : $4:NatMSet .
+internalize .
+
+set goal S1:NatMSet diffMSet S2:NatMSet = S1:NatMSet diffMSet S4:NatMSet -> S1:NatMSet diffMSet S2:NatMSet : S3:NatMSet = S1:NatMSet diffMSet S4:NatMSet : S3:NatMSet .
+apply gsi* to 0 on $3 .
+apply cut* to 0.3 with $1:NatMSet diffMSet $6 : $2:NatMSet = $1:NatMSet diffMSet $6 : $4:NatMSet .
+internalize .
+
+set goal S1:NatMSet : S3:NatMSet diffMSet S2:NatMSet = S1:NatMSet : S3:NatMSet diffMSet S4:NatMSet -> S1:NatMSet diffMSet S2:NatMSet = S1:NatMSet diffMSet S4:NatMSet .
+apply cut* to 0 with $1:NatMSet : $3:NatMSet diffMSet $2:NatMSet : $3:NatMSet = $1:NatMSet : $3:NatMSet diffMSet $3:NatMSet : $4:NatMSet .
+internalize .
+
+set goal A:Nat : S1:NatMSet diffMSet S2:NatMSet = A:Nat : S3:NatMSet diffMSet S4:NatMSet -> S1:NatMSet diffMSet S2:NatMSet = S3:NatMSet diffMSet S4:NatMSet .
+apply cut* to 0 with ($1:Nat : $2:NatMSet diffMSet $3:NatMSet) diffMSet $1:Nat = ($1:Nat : $4:NatMSet diffMSet $5:NatMSet) diffMSet $1:Nat .
+internalize .
+
+set goal min(S1:NeNatMSet) < min(S2:NeNatMSet) = True -> min(S1:NeNatMSet) inMSet S2:NeNatMSet = False .
+apply gsi* to 0 on $2 .
+apply le* to 0.1.1 with A:Nat < B:Nat = True -> False = A:Nat =nat= B:Nat .
+apply gsi* to 0.1.1.1 .
+apply sp* to 0.2 with $3 <= min($4) = True \/ $3 > min($4) = True .
+apply cut* to 0.2.3.1 with min($3 : $4) = min($4) .
+apply sp* to 0.2.3.1.2.1 with min($1:NeNatMSet) = $3 \/ min($1:NeNatMSet) =nat= $3 = False .
+apply le* to 0.2.3.1.2.1.3.1 with True = A:Nat < B:Nat /\ True = B:Nat < A:Nat -> false .
+apply gsi* to 0.2.3.1.2.1.3.1.1 .
+apply le* to 0.2.1.1 with True = A:Nat <= B:Nat \/ True = B:Nat < A:Nat .
+apply gsi* to 0.2.1.1.1 .
+apply cut* to 0.2.2 with min($3 : $4) = $3 .
+apply cut* to 0.2.2.2.1 with True = min($1:NeNatMSet) < min($4) .
+apply le* to 0.2.2.2.1.1 with True = A:Nat < B:Nat /\ True = B:Nat <= C:Nat -> True = A:Nat < C:Nat .
+apply gsi* to 0.2.2.2.1.1.1 .
+apply sp* to 0.2.2.2.1.2 with $3 = min($1:NeNatMSet) \/ $3 =nat= min($1:NeNatMSet) = False .
+internalize .
+
+set goal min(S1:NeNatMSet) <= N:Nat = True -> min(S1:NeNatMSet : N:Nat) = min(S1:NeNatMSet) .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal min(S1:NeNatMSet) <= min(S2:NeNatMSet) = True -> min(S1:NeNatMSet : S2:NeNatMSet) = min(S1:NeNatMSet) .
+apply gsi* to 0 on $2 .
+internalize .
+
+set goal S1:NatMSet =MSet= S2:NatMSet = True -> S1:NatMSet diffMSet N:Nat =MSet= S2:NatMSet diffMSet N:Nat = True .
+apply cut* to 0 with $3:NatMSet = $2:NatMSet .
+internalize .
+
+set goal S1:NeNatMSet =MSet= S2:NeNatMSet = True -> min(S1:NeNatMSet) = min(S2:NeNatMSet) .
+apply cut* to 0 with $1:NeNatMSet = $2:NeNatMSet .
+internalize .
+
+set goal $1:NatMSet =MSet= $2:NatMSet = True <-> toSortedList($1:NatMSet) = toSortedList($2:NatMSet) .
+apply deq* to 0 .
+apply ni* to 0.1 on toSortedList($1:NatMSet) .
+apply ni* to 0.1.3 on toSortedList($2:NatMSet) .
+apply cut* to 0.1.3.3 with $3 = $5 .
+apply cut* to 0.1.3.1.1 with $3 = $5:Nat .
+apply ni* to 0.1.2 on toSortedList($2:NatMSet) .
+apply ni* to 0.1.1 on toSortedList($2:NatMSet) .
+apply cut* to 0.1.1.3.1 with $3:Nat = $4 .
+apply cut* to 0.2 with $1:NatMSet = $2:NatMSet .
+internalize .
+
+set goal N1:Nat : S1:NatMSet = N2:Nat : S2:NatMSet -> N1:Nat inMSet N2:Nat : S2:NatMSet = True \/ N2:Nat inMSet N1:Nat : S1:NatMSet = True .
+apply gsi* to 0 on $3 $4 .
+
+set goal False = N1:Nat : S1:NatMSet =MSet= N2:Nat : S2:NatMSet \/ N1:Nat inMSet N2:Nat : S2:NatMSet = True \/ N2:Nat inMSet N1:Nat : S1:NatMSet = True .
+apply cbeqr to 0 .
+apply cut* to 0.1 with $1:Nat : $3:NatMSet = $2:Nat : $4:NatMSet .
+internalize .
+
+set goal N1:Nat : S1:NatMSet = N2:Nat : S2:NatMSet -> N1:Nat inMSet S2:NatMSet = True \/ N2:Nat inMSet S1:NatMSet = True \/ N1:Nat = N2:Nat .
+apply gsi* to 0 on $3 $4 .
+
+set goal False = N1:Nat : S1:NatMSet =MSet= N2:Nat : S2:NatMSet \/ N1:Nat inMSet S2:NatMSet = True \/ N2:Nat inMSet S1:NatMSet = True \/ N1:Nat = N2:Nat .
+apply cbeqr to 0 .
+apply cut* to 0.1 with $1:Nat : $3:NatMSet = $2:Nat : $4:NatMSet .
+apply gsi* to 0.1.2.1 on $3 $4 .
+internalize .

@@ -1,0 +1,410 @@
+set include BOOL off .
+set include NAT off .
+    
+fmod NuITP-BOOL is
+    sort Bool .
+    op False : -> Bool  [ ctor rpo 0 ] .   
+    op True : -> Bool [ ctor rpo 1 ] .
+    op _or_ : Bool Bool -> Bool [ assoc comm rpo 2 ] .
+    op _and_ : Bool Bool -> Bool [ assoc comm rpo 3 ] .
+    op _implies_ : Bool Bool -> Bool [ rpo 4 ] .
+    op _iff_ : Bool Bool -> Bool [ comm rpo 5 ] .
+    op not : Bool -> Bool [ rpo 6 ] .
+
+    var X : Bool .
+
+    eq [B1] : X or True = True [ variant ] .
+    eq [B2] : X or False = X [ variant ] .
+    eq [B3] : X and True = X [ variant ] .
+    eq [B4] : X and False = False [ variant ] .
+    eq [B5] : False implies X = True [ variant ] .
+    eq [B6] : True implies X = X [ variant ] .
+    eq [B7] : X iff X = True [ variant ] .
+    eq [B8] : True iff False = False [ variant ] .
+    eq [B9] : not(True) = False [ variant ] .
+    eq [B10] : not(False) = True [ variant ] .
+endfm
+
+fmod MY-NAT is
+  protecting NuITP-BOOL .
+  sorts Zero NzNat Nat .
+  subsort Zero NzNat < Nat .
+  op 0 : -> Zero [ctor rpo 11] .
+
+  op s_ : Nat -> NzNat [ctor rpo 12] .
+
+
+  op _+_ : NzNat Nat -> NzNat [assoc comm prec 33 rpo 19] .
+  op _+_ : Nat Nat -> Nat [ditto] .
+  eq N:Nat + 0 = N:Nat .
+  eq N:Nat + s M:Nat = s (N:Nat + M:Nat) .
+
+  op _*_ : NzNat NzNat -> NzNat [assoc comm prec 31 rpo 20] .
+  op _*_ : Nat Nat -> Nat [ditto] .
+  eq N:Nat * 0 = 0 .
+  eq N:Nat * s M:Nat = N:Nat + N:Nat * M:Nat .
+
+  op _<_ : Nat Nat -> Bool [prec 37 rpo 21] .
+  eq N:Nat < 0 = False .
+  eq 0 < 0 = False .
+  eq N:NzNat < 0 = False .
+  eq N:Nat < N:Nat = False .
+  eq 0 < N:NzNat = True .
+  eq s N:Nat < s M:Nat = N:Nat < M:Nat .
+
+  op _<=_ : Nat Nat -> Bool [prec 37 rpo 22] .
+  eq 0 <= 0 = True .
+  eq N:NzNat <= 0 = False .
+  eq N:Nat <= N:Nat = True .
+  eq 0 <= N:NzNat = True .
+  eq s N:Nat <= s M:Nat = N:Nat <= M:Nat .
+
+  op _>_ : Nat Nat -> Bool [prec 37 rpo 23] .
+  eq N:Nat > M:Nat = M:Nat < N:Nat .
+
+  op _>=_ : Nat Nat -> Bool [prec 37 rpo 24] .
+  eq N:Nat >= M:Nat = M:Nat <= N:Nat .
+
+  op _=nat=_ : Nat Nat -> Bool [comm rpo 14] .
+  eq 0 =nat= 0 = True .
+  eq 0 =nat= N:NzNat = False .
+  eq N:Nat =nat= N:Nat = True .
+  eq s N:Nat =nat= s M:Nat = N:Nat =nat= M:Nat .
+
+endfm
+
+fmod MY-NAT-LIST is
+  protecting MY-NAT .
+  sorts NeList List .
+  subsort Nat < NeList < List .
+
+  op nilList : -> List [ctor rpo 9] .
+  op __ : List List -> List [assoc id: nilList prec 24 rpo 10] .
+  op __ : NeList List -> NeList [ditto] .
+  op __ : List NeList -> NeList [ditto] .
+  op __ : NeList NeList -> NeList [ctor ditto] .
+
+  var E E' : Nat .
+  vars A L : List .
+  var C : Nat .
+
+  op headList : NeList -> Nat [rpo 39] .
+  eq headList(E L) = E .
+
+  op tailList : NeList -> List [rpo 40] .
+  eq tailList(E L) = L .
+
+  op lastList : NeList -> Nat [rpo 41] .
+  eq lastList(L E) = E .
+
+  op frontList : NeList -> List [rpo 42] .
+  eq frontList(L E) = L .
+
+
+  op reverseList : List -> List [rpo 45] .
+  op reverseList : NeList -> NeList [ditto] .
+  eq reverseList(nilList) = nilList .
+  eq reverseList(E) = E .
+  eq reverseList(E L) = reverseList(L) E .
+
+  op sizeList : List -> Nat [rpo 47] .
+  op sizeList : NeList -> NzNat [ditto] .
+  eq sizeList(nilList) = 0 .
+  eq sizeList(E L) = s sizeList(L) .
+
+  vars N M : Nat .
+
+  op take : Nat List -> List [rpo 48] .
+  eq take(N, nilList) = nilList .
+  eq take(0, L) = nilList .
+  eq take(s N, (M L)) = M take(N, L) .
+
+  op drop : Nat List -> List [rpo 49] .
+  eq drop(N, nilList) = nilList .
+  eq drop(0, L) = L .
+  eq drop(s N, (M L)) = drop(N, L) .
+
+endfm
+
+fmod MY-NAT-MSET is
+  protecting MY-NAT .
+  protecting MY-NAT-LIST .
+  sorts NeNatMSet NatMSet .
+  subsort Nat < NeNatMSet < NatMSet .
+
+  op nilMSet : -> NatMSet [ctor rpo 7] .
+  op _:_ : NatMSet NatMSet -> NatMSet [comm assoc id: nilMSet prec 24 rpo 8] .
+  op _:_ : NeNatMSet NatMSet -> NeNatMSet [ditto] .
+  op _:_ : NatMSet NeNatMSet -> NeNatMSet [ditto] .
+  op _:_ : NeNatMSet NeNatMSet -> NeNatMSet [ctor ditto] .
+
+  op _inMSet_ : Nat NatMSet -> Bool [rpo 15] .
+  eq N:Nat inMSet nilMSet = False .
+  eq N:Nat inMSet M:Nat = N:Nat =nat= M:Nat .
+  eq N:Nat inMSet N:Nat : S:NeNatMSet = True .
+  ceq N:Nat inMSet M:Nat : S:NeNatMSet = N:Nat inMSet S:NeNatMSet if N:Nat =nat= M:Nat = False .
+
+  op _diffMSet_ : NatMSet NatMSet -> NatMSet [rpo 25] .
+  eq nilMSet diffMSet S2:NatMSet = nilMSet .
+  eq S1:NatMSet diffMSet nilMSet = S1:NatMSet .
+  eq N:Nat : S1:NatMSet diffMSet N:Nat : S2:NatMSet = S1:NatMSet diffMSet S2:NatMSet .
+  ceq N:Nat : S1:NatMSet diffMSet S2:NeNatMSet = N:Nat : (S1:NatMSet diffMSet S2:NeNatMSet) if N:Nat inMSet S2:NeNatMSet = False .
+  
+  op _=MSet=_ : NatMSet NatMSet -> Bool [comm rpo 16] .
+  eq nilMSet =MSet= nilMSet = True .
+  eq nilMSet =MSet= S:NeNatMSet = False .
+  eq N:Nat =MSet= M:Nat = N:Nat =nat= M:Nat .
+  eq N:Nat : S1:NatMSet =MSet= N:Nat : S2:NatMSet = S1:NatMSet =MSet= S2:NatMSet .
+  ceq N:Nat : S1:NatMSet =MSet= S2:NatMSet = False if N:Nat inMSet S2:NatMSet = False .
+
+  op toMSet : NeList -> NeNatMSet [rpo 17] .
+  op toMSet : List -> NatMSet [ditto] .
+  eq toMSet(N:Nat R:List) = N:Nat : toMSet(R:List) .
+  eq toMSet(nilList) = nilMSet .
+
+  op toSortedList : NeNatMSet -> NeList [rpo 27] .
+  op toSortedList : NatMSet -> List [ditto] .
+  eq toSortedList(nilMSet) = nilList .
+  eq toSortedList(N:Nat) = N:Nat .
+  ceq toSortedList(N:Nat : S:NeNatMSet) = N:Nat toSortedList(S:NeNatMSet) if N:Nat <= min(S:NeNatMSet) = True .
+
+  op min : NeNatMSet -> Nat [rpo 26].
+  eq min(N:Nat) = N:Nat .
+  ceq min(N:Nat : S:NeNatMSet) = N:Nat if N:Nat <= min(S:NeNatMSet) = True .
+  ceq min(N:Nat : S:NeNatMSet) = min(S:NeNatMSet) if N:Nat > min(S:NeNatMSet) = True .
+
+  op sizeMSet : NeNatMSet -> NzNat [rpo 18] .
+  op sizeMSet : NatMSet -> Nat [ditto] .
+  eq sizeMSet(N:Nat : S:NatMSet) = s sizeMSet(S:NatMSet) .
+  eq sizeMSet(nilMSet) = 0 .
+
+endfm
+
+fmod MY-NAT-MATRIX is
+
+  protecting MY-NAT-LIST .
+
+  sorts NeNatMatrix NatMatrix .
+  subsort NeList < NeNatMatrix < NatMatrix .
+
+  op emptyMatrix : -> NatMatrix [ctor rpo 7] .
+  op _;_ : NatMatrix NatMatrix -> NatMatrix [assoc id: emptyMatrix prec 25 rpo 8] .
+  op _;_ : NeNatMatrix NatMatrix -> NeNatMatrix [ditto] .
+  op _;_ : NatMatrix NeNatMatrix -> NeNatMatrix [ditto] .
+  op _;_ : NeNatMatrix NeNatMatrix -> NeNatMatrix [ctor ditto] .
+
+
+
+  var E E' : NeList .
+  vars A L : NatMatrix .
+  var C : Nat .
+
+  op head : NeNatMatrix -> NeList [rpo 51] .
+  eq head(E ; L) = E .
+
+  op tail : NeNatMatrix -> NatMatrix [rpo 52] .
+  eq tail(E ; L) = L .
+
+  op last : NeNatMatrix -> NeList [rpo 53] .
+  eq last(L ; E) = E .
+
+  op front : NeNatMatrix -> NatMatrix [rpo 54] .
+  eq front(L ; E) = L .
+
+  op reverse : NatMatrix -> NatMatrix [rpo 57] .
+  op reverse : NeNatMatrix -> NeNatMatrix [ditto] .
+  eq reverse(emptyMatrix) = emptyMatrix .
+  eq reverse(E) = E .
+  eq reverse(E ; L) = reverse(L) ; E .
+
+  op size : NatMatrix -> Nat [rpo 59] .
+  op size : NeNatMatrix -> NzNat [ditto] .
+  eq size(emptyMatrix) = 0 .
+  eq size(E ; L) = s size(L) .
+
+  op insertColumn : List NatMatrix -> NatMatrix [rpo 67] .
+  eq insertColumn(nilList, M:NatMatrix) = M:NatMatrix .
+  eq insertColumn((N:Nat L:List), emptyMatrix) = (N:Nat nilList) ; insertColumn(L:List, emptyMatrix) .
+  eq insertColumn((N:Nat L:List), (L:NeList ; M:NatMatrix)) = (N:Nat L:NeList) ; insertColumn(L:List,M:NatMatrix) .
+
+  op transpose : NatMatrix -> NatMatrix [rpo 68] .
+  op transpose : NeNatMatrix -> NeNatMatrix [ditto] .
+  eq transpose(emptyMatrix) = emptyMatrix .
+  eq transpose(L:NeList ; Mtx:NatMatrix) = insertColumn(L:NeList, transpose(Mtx:NatMatrix)) .
+
+  op isSquareMat : NatMatrix Nat -> Bool [rpo 70] .
+  eq isSquareMat(emptyMatrix, N:Nat) = True .
+  eq isSquareMat(Mtx:NeNatMatrix, 0) = False .
+  ceq isSquareMat(Mtx:NeNatMatrix, N:NzNat) = True if size(Mtx:NeNatMatrix) = N:NzNat /\ isRectangularMat(Mtx:NeNatMatrix, N:NzNat) = True .
+  ceq isSquareMat(Mtx:NeNatMatrix, N:NzNat) = False if size(Mtx:NeNatMatrix) =nat= N:NzNat = False .
+  ceq isSquareMat(Mtx:NeNatMatrix, N:NzNat) = False if isRectangularMat(Mtx:NeNatMatrix, N:NzNat) = False .
+
+  op isRectangularMat : NatMatrix Nat -> Bool [rpo 66] .
+  eq isRectangularMat(emptyMatrix, 0) = True .
+  eq isRectangularMat(emptyMatrix, N:NzNat) = True .
+  eq isRectangularMat(L:NeList, 0) = False .
+  ceq isRectangularMat(L:NeList, N:NzNat) = True if (sizeList(L:NeList) =nat= N:NzNat) = True .
+  ceq isRectangularMat(L:NeList, N:NzNat) = False if (sizeList(L:NeList) =nat= N:NzNat) = False .
+  eq isRectangularMat((L:NeList ; Mtx:NeNatMatrix), 0) = False .
+  ceq isRectangularMat((L:NeList ; Mtx:NeNatMatrix), N:NzNat) = True if (sizeList(L:NeList) =nat= N:NzNat) = True /\ isRectangularMat(Mtx:NeNatMatrix, N:NzNat) = True .
+  ceq isRectangularMat((L:NeList ; Mtx:NeNatMatrix), N:NzNat) = False if (sizeList(L:NeList) =nat= N:NzNat) = False .
+  ceq isRectangularMat((L:NeList ; Mtx:NeNatMatrix), N:NzNat) = False if isRectangularMat(Mtx:NeNatMatrix, N:NzNat) = False .
+    
+endfm
+
+fmod SUDOKU is
+
+  pr MY-NAT-MATRIX .
+  pr MY-NAT-MSET .
+
+  vars N M V W : Nat .
+  vars L R     : List .
+  var Mtx      : NatMatrix .
+  var NeMtx    : NeNatMatrix .
+
+  op rangeToMSet : Nat Nat -> NatMSet [rpo 61] .
+  eq rangeToMSet(N:Nat, s M:Nat) = s M:Nat : rangeToMSet(N:Nat, M:Nat) .
+  eq rangeToMSet(N:Nat, N:Nat) = N:Nat .
+  eq rangeToMSet(N:NzNat, 0) = 0 .
+
+  op isValidRowValues : List Nat -> Bool [rpo 62] .
+  eq isValidRowValues(nilList, M) = True .
+  ceq isValidRowValues((V L), M) = True if (V > 0) = True /\ (V <= M) = True /\ isValidRowValues(L, M) = True .
+  ceq isValidRowValues((V L), M) = False if (V > 0) = False .
+  ceq isValidRowValues((V L), M) = False if (V <= M) = False .
+  ceq isValidRowValues((V L), M) = False if isValidRowValues(L, M) = False .
+
+  op isValidGridValues : NatMatrix Nat -> Bool [rpo 63] .
+  eq isValidGridValues(emptyMatrix, M) = True .
+  ceq isValidGridValues((L:NeList ; Mtx), M) = True if isValidRowValues(L:NeList, M) = True /\ isValidGridValues(Mtx, M) = True .
+
+  op takeRow : NatMatrix Nat -> List [rpo 85] .
+  eq takeRow(emptyMatrix, N:Nat) = nilList .
+  eq takeRow((L:NeList ; Mtx), 0) = L:NeList .
+  eq takeRow((L:NeList ; Mtx), s N:Nat) = takeRow(Mtx, N:Nat) .
+
+  op takeColumn : NatMatrix Nat -> List [rpo 86] .
+  eq takeColumn(Mtx, N) = takeRow(transpose(Mtx), N) .
+
+  op isUniqueRow : List -> Bool [rpo 64] .
+  eq isUniqueRow(nilList) = True .
+  ceq isUniqueRow(L:NeList) = True if toMSet(L:NeList) = rangeToMSet(s 0, sizeList(L:NeList)) .
+  ceq isUniqueRow(L:NeList) = False if toMSet(L:NeList) =MSet= rangeToMSet(s 0, sizeList(L:NeList)) = False .
+
+  op isUniqueRows : NatMatrix -> Bool [rpo 65] .
+  eq isUniqueRows(emptyMatrix) = True .
+  ceq isUniqueRows((L:NeList ; Mtx)) = True if isUniqueRow(L:NeList) = True /\ isUniqueRows(Mtx) = True .
+
+  op isUniqueCols : NatMatrix -> Bool [rpo 69] .
+  eq isUniqueCols(Mtx) = isUniqueRows(transpose(Mtx)) .
+
+  op takeMatrix : NatMatrix NatMatrix -> NatMSet [rpo 83] .
+  eq takeMatrix((X:Nat L1:NeList) ; M:NatMatrix, (s Y:Nat L2:NeList) ; K:NatMatrix) = X:Nat : takeMatrix((X:Nat L1:NeList) ; M:NatMatrix, (Y:Nat L2:NeList) ; K:NatMatrix) .
+  eq takeMatrix((X:Nat L1:NeList) ; M:NatMatrix, (0 L2:NeList) ; K:NatMatrix) = takeMatrix(L1:NeList ; M:NatMatrix, L2:NeList ; K:NatMatrix) .
+  eq takeMatrix(X:Nat ; M:NatMatrix, s Y:Nat ; K:NatMatrix) = X:Nat : takeMatrix(X:Nat ; M:NatMatrix, Y:Nat ; K:NatMatrix) .
+  eq takeMatrix(X:Nat ; M:NatMatrix, 0 ; K:NatMatrix) = takeMatrix(M:NatMatrix, K:NatMatrix) .
+  eq takeMatrix(X:Nat ; M:NatMatrix, (Y:Nat L2:NeList) ; K:NatMatrix) = takeMatrix(X:Nat ; M:NatMatrix, Y:Nat ; K:NatMatrix) .
+  eq takeMatrix((X:Nat L1:NeList) ; M:NatMatrix, Y:Nat ; K:NatMatrix) = takeMatrix(X:Nat ; M:NatMatrix, Y:Nat ; K:NatMatrix) .
+  eq takeMatrix(M:NatMatrix, emptyMatrix) = nilMSet .
+  eq takeMatrix(emptyMatrix, K:NatMatrix) = nilMSet .
+
+  op takeBlock : NatMatrix Nat Nat Nat -> List [rpo 72] .
+  eq takeBlock(Mtx, N, M, V) = $takeBlock(Mtx, V * N, V * M, V, V) .
+
+  op $takeBlock : NatMatrix Nat Nat Nat Nat -> List [rpo 71] .
+  eq $takeBlock(emptyMatrix, N, M, W, V) = nilList .
+  eq $takeBlock(Mtx, 0, N, 0, V) = nilList .
+  eq $takeBlock((L:NeList ; Mtx), 0, N, s M, V) = take(V, drop(N,L:NeList)) $takeBlock(Mtx, 0, N, M, V) .
+  eq $takeBlock((L:NeList ; Mtx), s N, M, W, V) = $takeBlock(Mtx, N, M, W, V) .
+
+  op isUniqueBlocks : NatMatrix Nat -> Bool [rpo 74] .
+  eq isUniqueBlocks(Mtx, s N) = $isUniqueBlocks(Mtx, N, N, s N) .
+  eq isUniqueBlocks(Mtx, 0) = True .
+
+  op $isUniqueBlocks : NatMatrix Nat Nat Nat -> Bool [rpo 73] .
+  eq $isUniqueBlocks(Mtx, 0, 0, N) = isUniqueRow(takeBlock(Mtx, 0, 0, N)) .
+  ceq $isUniqueBlocks(Mtx, s N, 0, s M) = True if isUniqueRow(takeBlock(Mtx, s N, 0, s M)) = True /\ $isUniqueBlocks(Mtx, N, M, s M) = True .
+  ceq $isUniqueBlocks(Mtx, N, s M, V) = True if isUniqueRow(takeBlock(Mtx, N, s M, V)) = True /\ $isUniqueBlocks(Mtx, N, M, V) = True .
+
+  op takeCorners : NeNatMatrix NzNat -> NeNatMSet [rpo 77] .
+  op takeCorners : NatMatrix Nat -> NatMSet [ditto] .
+  eq takeCorners(emptyMatrix, N:Nat) = nilMSet .
+  eq takeCorners(L:NeList, N:Nat) = $$takeCorners(L:NeList, N:Nat) .
+  eq takeCorners(L:NeList ; Mtx:NeNatMatrix, s N:Nat) = $takeCorners(L:NeList ; Mtx:NeNatMatrix, N:Nat, N:Nat) .
+
+  op $takeCorners : NeNatMatrix NzNat NzNat -> NeNatMSet [rpo 76] .
+  op $takeCorners : NatMatrix Nat Nat -> NatMSet [ditto] .
+  eq $takeCorners(L1:NeList ; Mtx:NatMatrix ; L2:NeList, s N:Nat, M:Nat) = $$takeCorners(L1:NeList, M:Nat) : $$takeCorners(L2:NeList, M:Nat) : $takeCorners(Mtx:NatMatrix, N:Nat, M:Nat) .
+  eq $takeCorners(L:NeList, s N:Nat, M:Nat) = $$takeCorners(L:NeList, M:Nat) .
+  eq $takeCorners(emptyMatrix, N:Nat, M:Nat) = nilMSet .
+  eq $takeCorners(M:NatMatrix, 0, M:Nat) = nilMSet .
+
+  op $$takeCorners : NeList NzNat -> NeNatMSet [rpo 75] .
+  op $$takeCorners : List Nat -> NatMSet [ditto] .
+  eq $$takeCorners(N1:Nat L:List N2:Nat, s N:Nat) = N1:Nat : N2:Nat : $$takeCorners(L:List, N:Nat) .
+  eq $$takeCorners(N1:Nat, s N:Nat) = N1:Nat .
+  eq $$takeCorners(nilList, N:Nat) = nilMSet .
+  eq $$takeCorners(L:List, 0) = nilMSet .
+
+  op takeRing : NeNatMatrix NzNat -> NeNatMSet [rpo 82] .
+  op takeRing : NatMatrix Nat -> NatMSet [ditto] .
+  eq takeRing(emptyMatrix, N:Nat) = nilMSet .
+  eq takeRing(L:NeList, s N:Nat) = $$$takeRing(L:NeList, N:Nat) .
+  eq takeRing(L:NeList ; Mtx:NeNatMatrix, s N:Nat) = $takeRing(L:NeList ; Mtx:NeNatMatrix, N:Nat, N:Nat) .
+
+  op $takeRing : NatMatrix Nat Nat -> NatMSet [rpo 81] .
+  eq $takeRing(L1:NeList ; Mtx:NatMatrix ; L2:NeList, s N:Nat, M:Nat) = $takeRing(Mtx:NatMatrix, N:Nat, M:Nat) .
+  eq $takeRing(L1:NeList ; Mtx:NatMatrix ; L2:NeList, 0, M:Nat) = $$takeRing(Mtx:NatMatrix, M:Nat) : $$$takeRing(L1:NeList, M:Nat) : $$$takeRing(L2:NeList, M:Nat) .
+  eq $takeRing(L:NeList, s N:Nat, M:Nat) = $$$takeRing(L:NeList, M:Nat) .
+  eq $takeRing(L:NeList, 0, M:Nat) = nilMSet .
+  eq $takeRing(emptyMatrix, N:Nat, M:Nat) = nilMSet .
+
+  op $$takeRing : NatMatrix Nat -> NatMSet [rpo 80] .
+  eq $$takeRing(L:NeList ; Mtx:NatMatrix, N:Nat) = $$$$takeRing(L:NeList, N:Nat) : $$takeRing(Mtx:NatMatrix, N:Nat) .
+  eq $$takeRing(emptyMatrix, N:Nat) = nilMSet .
+
+  op $$$takeRing : List Nat -> NatMSet [rpo 79] .
+  eq $$$takeRing(N1:Nat L:List N2:Nat, s N:Nat) = $$$takeRing(L:List, N:Nat) .
+  eq $$$takeRing(N1:Nat, s N:Nat) = nilMSet .
+  eq $$$takeRing(N:Nat L:List, 0) = N:Nat : $$$takeRing(L:List, 0) .
+  eq $$$takeRing(nilList, N:Nat) = nilMSet .
+
+  op $$$$takeRing : List Nat -> NatMSet [rpo 78] .
+  eq $$$$takeRing(N1:Nat L:List N2:Nat, s N:Nat) = $$$$takeRing(L:List, N:Nat) .
+  eq $$$$takeRing(N1:Nat L:List N2:Nat, 0) = N1:Nat : N2:Nat .
+  eq $$$$takeRing(N1:Nat, 0) = N1:Nat .
+  eq $$$$takeRing(N1:Nat, N:NzNat) = nilMSet .
+  eq $$$$takeRing(nilList, N:Nat) = nilMSet .
+
+  op takeOverlap : NeNatMatrix NzNat -> NeNatMSet [rpo 77] .
+  op takeOverlap : NatMatrix Nat -> NatMSet [ditto] .
+  eq takeOverlap(emptyMatrix, N:Nat) = nilMSet .
+  eq takeOverlap(L:NeList, N:Nat) = $$takeOverlap(L:NeList, N:Nat) .
+  eq takeOverlap(L:NeList ; Mtx:NeNatMatrix, s N:Nat) = $takeOverlap(L:NeList ; Mtx:NeNatMatrix, N:Nat, N:Nat) .
+
+  op $takeOverlap : NeNatMatrix NzNat NzNat -> NeNatMSet [rpo 76] .
+  op $takeOverlap : NatMatrix Nat Nat -> NatMSet [ditto] .
+  eq $takeOverlap(L1:NeList ; Mtx:NatMatrix ; L2:NeList, s N:Nat, M:Nat) = $$takeOverlap(L1:NeList, M:Nat) : $$takeOverlap(L2:NeList, M:Nat) : $takeOverlap(Mtx:NatMatrix, N:Nat, M:Nat) .
+  eq $takeOverlap(L1:NeList ; Mtx:NatMatrix ; L2:NeList, 0, M:Nat) = $$takeCorners(L1:NeList, s M:Nat) : $$takeCorners(L2:NeList, s M:Nat).
+  eq $takeOverlap(L:NeList, s N:Nat, M:Nat) = $$takeOverlap(L:NeList, M:Nat) .
+  eq $takeOverlap(L:NeList, 0, M:Nat) = $$takeCorners(L:NeList, s M:Nat) .
+  eq $takeOverlap(emptyMatrix, N:Nat, M:Nat) = nilMSet .
+
+  op $$takeOverlap : NeList NzNat -> NeNatMSet [rpo 75] .
+  op $$takeOverlap : List Nat -> NatMSet [ditto] .
+  eq $$takeOverlap(N1:Nat L:List N2:Nat, s N:Nat) = $$takeOverlap(L:List, N:Nat) .
+  eq $$takeOverlap(N1:Nat L:List N2:Nat, 0) = N1:Nat : N2:Nat .
+  eq $$takeOverlap(N1:Nat, s N:Nat) = nilMSet .
+  eq $$takeOverlap(N1:Nat, 0) = N1:Nat .
+  eq $$takeOverlap(nilList, N:Nat) = nilMSet .
+  
+  op isSolved : NatMatrix Nat -> Bool [rpo 84] .
+  ceq isSolved(Mtx, N) = True if isValidGridValues(Mtx, N * N) = True /\ isSquareMat(Mtx, N * N) = True /\ 
+    isUniqueRows(Mtx) = True /\ isUniqueCols(Mtx) = True /\ isUniqueBlocks(Mtx, N) = True .
+  ceq isSolved(Mtx, N) = False if isValidGridValues(Mtx, N * N) = False .
+  ceq isSolved(Mtx, N) = False if isSquareMat(Mtx, N * N) = False .
+  ceq isSolved(Mtx, N) = False if isUniqueRows(Mtx) = False .
+  ceq isSolved(Mtx, N) = False if isUniqueCols(Mtx) = False .
+  ceq isSolved(Mtx, N) = False if isUniqueBlocks(Mtx, N) = False .
+
+endfm
