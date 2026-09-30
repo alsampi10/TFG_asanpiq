@@ -270,8 +270,24 @@ apply ni* to 0.2.1 on takeCorners($3:NeList ; $4:NeList, $2:NzNat) .
 apply ni* to 0.2.1.1.1 on $takeOverlap($5:NeList ; $7:NeList, $6:Nat, $6:Nat) .
 internalize .
 
-set goal isUniqueCols(M:NatMatrix) = True /\ True = isRectangularMat(M:NatMatrix, N2:Nat) /\ True = N:Nat < N2:Nat -> True = isUniqueRow(takeColumn(M:NatMatrix, N:Nat)) .
+set goal N:NzNat > s 0 = True /\ True = isSolved(M:NeNatMatrix, N:NzNat) -> takeCorners(M:NeNatMatrix, N:NzNat) : takeOverlap(M:NeNatMatrix, N:NzNat) = rangeToMSet(s 0, N:NzNat * N:NzNat) : rangeToMSet(s 0, N:NzNat * N:NzNat) : rangeToMSet(s 0, N:NzNat * N:NzNat) : rangeToMSet(s 0, N:NzNat * N:NzNat) .
+apply cut* to 0 with takeCorners($1:NeNatMatrix, $2:NzNat) : takeOverlap($1:NeNatMatrix, $2:NzNat) = takeCorners($1:NeNatMatrix, s $2:NzNat) .
 internalize .
+
+set goal isUniqueRow(takeRow(M:NatMatrix, X:Nat)) = True /\ sizeList(takeRow(M:NatMatrix, X:Nat)) = N:NzNat -> takeRow(M:NatMatrix, X:Nat) = rangeToMSet(s 0, N:NzNat) .
+apply gsi* to 0 .
+internalize .
+
+set goal isUniqueRow(takeColumn(M:NatMatrix, Y:Nat)) = True /\ sizeList(takeColumn(M:NatMatrix, Y:Nat)) = N:NzNat -> takeColumn(M:NatMatrix, Y:Nat) = rangeToMSet(s 0, N:NzNat) .
+apply eps to 0 .
+apply va* to 0.1 on transpose($1:NatMatrix) .
+internalize .
+
+set goal N:NzNat > s 0 = True /\ True = isSolved(M:NeNatMatrix, N:NzNat) /\ s X1:Nat = N:NzNat /\ X2:Nat + N:NzNat = N:NzNat * N:NzNat -> takeRing(M:NeNatMatrix, N:NzNat) : takeOverlap(M:NeNatMatrix, N:NzNat) = toMSet(takeRow(M:NeNatMatrix, X1:Nat) takeRow(M:NeNatMatrix, X2:Nat) takeColumn(M:NeNatMatrix, X1:Nat) takeColumn(M:NeNatMatrix, X2:Nat)) .
+# Esta propiedad no se ha podido demostrar
+internalize .
+
+set goal isUniqueCols(M:NatMatrix) = True /\ True = isRectangularMat(M:NatMatrix, N2:Nat) /\ True = N:Nat < N2:Nat -> True = isUniqueRow(takeColumn(M:NatMatrix, N:Nat)) .
 apply gsi* to 0 .
 apply ns* to 0.6.1 .
 apply ns* to 0.5.1 .
